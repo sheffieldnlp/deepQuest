@@ -8,8 +8,8 @@ DeepQuest is written in Python and we highly recommend that you use a `virtual e
 
 Assuming you are working in a dedicated Python environment, get DeepQuest as follows::
 
-    git clone https://julia_ive@bitbucket.org/julia_ive/postech-qe-reproduced.git
-    cd postech-qe-reproduced/postech/nmt-keras
+    git clone git@github.com:sheffieldnlp/deepQuest.git
+    cd deepQuest/deepQuest
     pip install -r requirements.txt
 
 Similarly to the `NMT-Keras`_ library, DeepQuest already includes the required versions of Keras_ and `Multimodal Keras Wrapper`_. 
