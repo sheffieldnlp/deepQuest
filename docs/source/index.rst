@@ -1,13 +1,12 @@
-=========
-DeepQuest
-=========
+===========================================================
+DeepQuest -- Framework for neural-based Quality Estimation
+===========================================================
 
-**Framework for Quality Estimation based on deep-learning approaches**
+Developed at the University of Sheffield, DeepQuest provides state-of-the-art models for multi-level Quality Estimation.
+Based on the NMT-Keras library, it is fully written in Python.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
+   :maxdepth: 1
   
    introduction
    installation
@@ -16,9 +15,6 @@ DeepQuest
    help
 
 
-Indices and tables
-==================
+**Acknowledgements**
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+The development of DeepQuest received funding from the European Association of Machine Translation and the Amazon Academic Research Awards program.
