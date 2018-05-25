@@ -10,7 +10,6 @@ Based on the NMT-Keras library, it is fully written in Python.
   
    introduction
    installation
-   usage
    tutorials
    help
 
