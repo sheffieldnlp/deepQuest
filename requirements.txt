@@ -1,0 +1,13 @@
+-e git+https://github.com/lvapeab/coco-caption.git#egg=coco-caption
+cloudpickle
+h5py
+matplotlib
+numpy
+scikit-image
+scikit-learn
+six
+tables
+numpy
+tables
+theano
+toolz
