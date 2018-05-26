@@ -21,7 +21,7 @@ More information on https://sheffieldnlp.github.io/deepQuest
 
 ## Acknowledgements
 
-The development of DeepQuest received funding from the [European Association of Machine Translation][5] and the [Amazon Academic Research Awards][6] program.
+The development of DeepQuest received funding from the [European Association for Machine Translation][5] and the [Amazon Academic Research Awards][6] program.
 
 
 [1]: https://www.sheffield.ac.uk
