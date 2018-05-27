@@ -22,6 +22,7 @@ from .common import floatx, epsilon, image_data_format
 from ..utils.generic_utils import has_arg
 # Legacy functions
 from .common import set_image_dim_ordering, image_dim_ordering
+import theano.ifelse
 
 py_all = all
 py_sum = sum
