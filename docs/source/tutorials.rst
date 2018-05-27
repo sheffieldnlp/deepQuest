@@ -120,6 +120,8 @@ Once all the training parameters are defined in the configuration file, one can 
 
   .. code:: bash 
 
+    export KERAS_BACKEND=theano
+    export MKL_THREADING_LAYER=GNU
     THEANO_FLAGS=device=cuda{1,0} python main.py --config config.py |tee -a /tmp/deepQuest.log 2>&1 &
 
 One can observe the progression of the training in the log file created in the temporary directory.
