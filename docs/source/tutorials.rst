@@ -16,7 +16,9 @@ In its current version, DeepQuest provides the following, multi-level, QE models
 
 Depending on the desired level of prediction, the configuration will differ, and this section aims to give a detailed description of the customised parameters.
 
-The first step is to create a configuration file (*e.g. config.py*), which defines the parameters of the model to train, starting with the definition of the task:
+The first step is to create a configuration file (see `configs/example_config-WordQE.py`_ for an example), which defines the parameters of the model to train, starting with the definition of the task:
+
+.. _configs/example_config-WordQE.py: https://github.com/sheffieldnlp/deepQuest/blob/master/configs/example_config-WordQE.py
 
   | ``TASK_NAME``: name given to the task; 
   | ``SRC_LAN``, ``TRG_LAN``: source and target language of the task;
