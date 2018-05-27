@@ -2,7 +2,7 @@
 Installation
 ############
 
-DeepQuest is written in Python and we highly recommend that you use a `virtual environment`_ in order to keep under control your working environment, without interfering with your system-wide configuration, neither former installation of dependencies.
+DeepQuest is written in Python and we highly recommend that you use a `virtual environment`_ (or Conda_) in order to keep under control your working environment, without interfering with your system-wide configuration, neither former installation of dependencies.
 
 Assuming you are working in a dedicated Python environment, get DeepQuest as follows::
 
@@ -21,6 +21,7 @@ This will considerably extend the training time, especially for complex architec
 
 .. ==============================================================================
 .. _`virtual environment`:  https://virtualenvwrapper.readthedocs.io/en/latest/
+.. _Conda: https://conda.io/docs/user-guide/tasks/manage-environments.html
 .. _Keras: https://github.com/MarcBS/keras
 .. _Multimodal Keras Wrapper: https://github.com/lvapeab/multimodal_keras_wrapper
 .. _pip: https://en.wikipedia.org/wiki/Pip_(package_manager)
