@@ -343,12 +343,12 @@ class TranslationModel(Model_Wrapper):
     # The sententence-level representations of both the SRC and the MT are created using two bi-directional RNNs.
     # Those representations are then concatenated at the word level, and the sentence representation is a weighted sum of its words.
     # We apply the following attention function computing a normalized weight for each hidden state of an RNN h_j: 
-    #       alpha_j = exp(W_a*h_j)/∑_k exp(W_a*h_k)
+    #       alpha_j = exp(W_a*h_j)/sum_k exp(W_a*h_k)
     # The resulting sentence vector is thus a weighted sum of word vectors:
-    #       v = ∑_j alpha_j*h_j
+    #       v = sum_j alpha_j*h_j
     # Sentence vectors are then directly used for making classification decisions.
 
-    def EncSent(self, params)
+    def EncSent(self, params):
         src_words = Input(name=self.ids_inputs[0],
                           batch_shape=tuple([None, params['MAX_INPUT_TEXT_LEN']]), dtype='int32')
         src_embedding = Embedding(params['OUTPUT_VOCABULARY_SIZE'], params['TARGET_TEXT_EMBEDDING_SIZE'],
@@ -433,16 +433,16 @@ class TranslationModel(Model_Wrapper):
     # Those representations are then concatenated at the word level.
     # A sentence representation is a weighted sum of its words.
     # We apply the following attention function computing a normalized weight for each hidden state of an RNN h_j:
-    #       alpha_j = exp(W_a*h_j)/∑_k exp(W_a*h_k)
+    #       alpha_j = exp(W_a*h_j)/sum_k exp(W_a*h_k)
     # The resulting sentence vector is thus a weighted sum of word vectors:
-    #       v = ∑_j alpha_j*h_j
+    #       v = sum_j alpha_j*h_j
     # Sentence vectors are inputted in a doc-level bi-directional RNN.
     # The last hidden state of ths RNN is taken as the summary of an entire document.
     # Doc-level representations are then directly used for making classification decisions.
     #
     ## References
-    # - Zichao Yang, Diyi Yang, Chris Dyer, Xiaodong He, Alex Smola, and Eduard Hovy. 2016. Hierarchical attention networks for document classification. In Proceedings of the 2016 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, pages 1480–1489, San Diego, California, June. Association for Computational Linguistics.
-    # - Jiwei Li, Thang Luong, and Dan Jurafsky. 2015. A hierarchical neural autoencoder for paragraphs and docu- ments. In Proceedings of the 53rd Annual Meeting of the Association for Computational Linguistics and the 7th International Joint Conference on Natural Language Processing (Volume 1: Long Papers), pages 1106–1115, Beijing, China, July. Association for Computational Linguistics.
+    # - Zichao Yang, Diyi Yang, Chris Dyer, Xiaodong He, Alex Smola, and Eduard Hovy. 2016. Hierarchical attention networks for document classification. In Proceedings of the 2016 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, pages 1480-1489, San Diego, California, June. Association for Computational Linguistics.
+    # - Jiwei Li, Thang Luong, and Dan Jurafsky. 2015. A hierarchical neural autoencoder for paragraphs and docu- ments. In Proceedings of the 53rd Annual Meeting of the Association for Computational Linguistics and the 7th International Joint Conference on Natural Language Processing (Volume 1: Long Papers), pages 1106-1115, Beijing, China, July. Association for Computational Linguistics.
 
     def EncDoc(self, params):
         src_words = Input(name=self.ids_inputs[0],
@@ -551,16 +551,16 @@ class TranslationModel(Model_Wrapper):
     # Those representations are then concatenated at the word level.
     # A sentence representation is a weighted sum of its words.
     # We apply the following attention function computing a normalized weight for each hidden state of an RNN h_j:
-    #       alpha_j = exp(W_a*h_j)/∑_k exp(W_a*h_k)
+    #       alpha_j = exp(W_a*h_j)/sum_k exp(W_a*h_k)
     # The resulting sentence vector is thus a weighted sum of word vectors:
-    #       v = ∑_j alpha_j*h_j
+    #       v = sum_j alpha_j*h_j
     # Sentence vectors are inputted in a doc-level bi-directional RNN.
     # A document representation is a weighted sum of its sentences. We apply the attention function as described above.
     # Doc-level representations are then directly used for making classification decisions.
     #
     ## References
-    # - Zichao Yang, Diyi Yang, Chris Dyer, Xiaodong He, Alex Smola, and Eduard Hovy. 2016. Hierarchical attention networks for document classification. In Proceedings of the 2016 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, pages 1480–1489, San Diego, California, June. Association for Computational Linguistics.
-    # - Jiwei Li, Thang Luong, and Dan Jurafsky. 2015. A hierarchical neural autoencoder for paragraphs and docu- ments. In Proceedings of the 53rd Annual Meeting of the Association for Computational Linguistics and the 7th International Joint Conference on Natural Language Processing (Volume 1: Long Papers), pages 1106–1115, Beijing, China, July. Association for Computational Linguistics.
+    # - Zichao Yang, Diyi Yang, Chris Dyer, Xiaodong He, Alex Smola, and Eduard Hovy. 2016. Hierarchical attention networks for document classification. In Proceedings of the 2016 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, pages 1480-1489, San Diego, California, June. Association for Computational Linguistics.
+    # - Jiwei Li, Thang Luong, and Dan Jurafsky. 2015. A hierarchical neural autoencoder for paragraphs and docu- ments. In Proceedings of the 53rd Annual Meeting of the Association for Computational Linguistics and the 7th International Joint Conference on Natural Language Processing (Volume 1: Long Papers), pages 1106-1115, Beijing, China, July. Association for Computational Linguistics.
 
     def EncDocAtt(self, params):
         src_words = Input(name=self.ids_inputs[0],
@@ -678,9 +678,9 @@ class TranslationModel(Model_Wrapper):
     # Doc-level representations are then directly used for making classification decisions.
     #
     ## References
-    # - Hyun Kim, Hun-Young Jung, Hongseok Kwon, Jong-Hyeok Lee, and Seung-Hoon Na. 2017a. Predictor- estimator: Neural quality estimation based on target word prediction for machine translation. ACM Trans. Asian Low-Resour. Lang. Inf. Process., 17(1):3:1–3:22, September.
-    # - Zichao Yang, Diyi Yang, Chris Dyer, Xiaodong He, Alex Smola, and Eduard Hovy. 2016. Hierarchical attention networks for document classification. In Proceedings of the 2016 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, pages 1480–1489, San Diego, California, June. Association for Computational Linguistics.
-    # - Jiwei Li, Thang Luong, and Dan Jurafsky. 2015. A hierarchical neural autoencoder for paragraphs and docu- ments. In Proceedings of the 53rd Annual Meeting of the Association for Computational Linguistics and the 7th International Joint Conference on Natural Language Processing (Volume 1: Long Papers), pages 1106–1115, Beijing, China, July. Association for Computational Linguistics.
+    # - Hyun Kim, Hun-Young Jung, Hongseok Kwon, Jong-Hyeok Lee, and Seung-Hoon Na. 2017a. Predictor- estimator: Neural quality estimation based on target word prediction for machine translation. ACM Trans. Asian Low-Resour. Lang. Inf. Process., 17(1):3:1-3:22, September.
+    # - Zichao Yang, Diyi Yang, Chris Dyer, Xiaodong He, Alex Smola, and Eduard Hovy. 2016. Hierarchical attention networks for document classification. In Proceedings of the 2016 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, pages 1480-1489, San Diego, California, June. Association for Computational Linguistics.
+    # - Jiwei Li, Thang Luong, and Dan Jurafsky. 2015. A hierarchical neural autoencoder for paragraphs and docu- ments. In Proceedings of the 53rd Annual Meeting of the Association for Computational Linguistics and the 7th International Joint Conference on Natural Language Processing (Volume 1: Long Papers), pages 1106-1115, Beijing, China, July. Association for Computational Linguistics.
 
     def EstimatorDoc(self, params):
         src_text = Input(name=self.ids_inputs[0],
@@ -1146,15 +1146,15 @@ class TranslationModel(Model_Wrapper):
     # Sentence-level representations are created as by a POSTECH-inspired sentence-level QE model.
     # Those representations are inputted in a doc-level bi-directional RNN.
     # A document representation is a weighted sum of its sentences.
-    # We apply the following attention function computing a normalized weight for each hidden state of an RNN h_j: alpha_j = exp(W_a*h_j)/∑_k exp(W_a*h_k)
+    # We apply the following attention function computing a normalized weight for each hidden state of an RNN h_j: alpha_j = exp(W_a*h_j)/sum_k exp(W_a*h_k)
     # The resulting document vector is thus a weighted sum of sentence vectors:
-    # v = ∑_j alpha_j*h_j
+    # v = sum_j alpha_j*h_j
     # Doc-level representations are then directly used for making classification decisions.
     #
     ## References
-    # - Hyun Kim, Hun-Young Jung, Hongseok Kwon, Jong-Hyeok Lee, and Seung-Hoon Na. 2017a. Predictor- estimator: Neural quality estimation based on target word prediction for machine translation. ACM Trans. Asian Low-Resour. Lang. Inf. Process., 17(1):3:1–3:22, September.
-    # - Zichao Yang, Diyi Yang, Chris Dyer, Xiaodong He, Alex Smola, and Eduard Hovy. 2016. Hierarchical attention networks for document classification. In Proceedings of the 2016 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, pages 1480–1489, San Diego, California, June. Association for Computational Linguistics.
-    # - Jiwei Li, Thang Luong, and Dan Jurafsky. 2015. A hierarchical neural autoencoder for paragraphs and docu- ments. In Proceedings of the 53rd Annual Meeting of the Association for Computational Linguistics and the 7th International Joint Conference on Natural Language Processing (Volume 1: Long Papers), pages 1106–1115, Beijing, China, July. Association for Computational Linguistics.
+    # - Hyun Kim, Hun-Young Jung, Hongseok Kwon, Jong-Hyeok Lee, and Seung-Hoon Na. 2017a. Predictor- estimator: Neural quality estimation based on target word prediction for machine translation. ACM Trans. Asian Low-Resour. Lang. Inf. Process., 17(1):3:1-3:22, September.
+    # - Zichao Yang, Diyi Yang, Chris Dyer, Xiaodong He, Alex Smola, and Eduard Hovy. 2016. Hierarchical attention networks for document classification. In Proceedings of the 2016 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, pages 1480-1489, San Diego, California, June. Association for Computational Linguistics.
+    # - Jiwei Li, Thang Luong, and Dan Jurafsky. 2015. A hierarchical neural autoencoder for paragraphs and docu- ments. In Proceedings of the 53rd Annual Meeting of the Association for Computational Linguistics and the 7th International Joint Conference on Natural Language Processing (Volume 1: Long Papers), pages 1106-1115, Beijing, China, July. Association for Computational Linguistics.
 
     def EstimatorDocAtt(self, params):
         src_text = Input(name=self.ids_inputs[0],
@@ -1621,7 +1621,7 @@ class TranslationModel(Model_Wrapper):
     # 1. Sentence quality scores (shape: (mini_batch_size,))
     #
     ## References:
-    # - Hyun Kim, Hun-Young Jung, Hongseok Kwon, Jong-Hyeok Lee, and Seung-Hoon Na. 2017a. Predictor- estimator: Neural quality estimation based on target word prediction for machine translation. ACM Trans. Asian Low-Resour. Lang. Inf. Process., 17(1):3:1–3:22, September.
+    # - Hyun Kim, Hun-Young Jung, Hongseok Kwon, Jong-Hyeok Lee, and Seung-Hoon Na. 2017a. Predictor- estimator: Neural quality estimation based on target word prediction for machine translation. ACM Trans. Asian Low-Resour. Lang. Inf. Process., 17(1):3:1-3:22, September.
 
 
     def EstimatorSent(self, params):
@@ -2051,7 +2051,7 @@ class TranslationModel(Model_Wrapper):
     # 1. Word quality labels (shape: (mini_batch_size, number_of_qe_labels))
     #
     ## References:
-    # - Hyun Kim, Hun-Young Jung, Hongseok Kwon, Jong-Hyeok Lee, and Seung-Hoon Na. 2017a. Predictor- estimator: Neural quality estimation based on target word prediction for machine translation. ACM Trans. Asian Low-Resour. Lang. Inf. Process., 17(1):3:1–3:22, September.
+    # - Hyun Kim, Hun-Young Jung, Hongseok Kwon, Jong-Hyeok Lee, and Seung-Hoon Na. 2017a. Predictor- estimator: Neural quality estimation based on target word prediction for machine translation. ACM Trans. Asian Low-Resour. Lang. Inf. Process., 17(1):3:1-3:22, September.
 
     def EstimatorWord(self, params):
         # 1. Source text input
@@ -2484,7 +2484,7 @@ class TranslationModel(Model_Wrapper):
     # 1. Machine-translated sentences (shape: (mini_batch_size, output_vocabulary_size))
     #
     ## References
-    # - Hyun Kim, Hun-Young Jung, Hongseok Kwon, Jong-Hyeok Lee, and Seung-Hoon Na. 2017a. Predictor- estimator: Neural quality estimation based on target word prediction for machine translation. ACM Trans. Asian Low-Resour. Lang. Inf. Process., 17(1):3:1–3:22, September.
+    # - Hyun Kim, Hun-Young Jung, Hongseok Kwon, Jong-Hyeok Lee, and Seung-Hoon Na. 2017a. Predictor- estimator: Neural quality estimation based on target word prediction for machine translation. ACM Trans. Asian Low-Resour. Lang. Inf. Process., 17(1):3:1-3:22, September.
 
     def Predictor(self, params):
         # 1. Source text input
