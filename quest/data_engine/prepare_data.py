@@ -348,7 +348,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                             bpe_codes=params.get('BPE_CODES_PATH', None))
 
                 if len(params['INPUTS_IDS_DATASET']) == 2:
-                    if 'train' in split:
+                    if 'PRED_VOCAB' not in params and 'train' in split:
 
                         ds.setInput(base_path + '/' + params['TEXT_FILES'][split] + ext,
                                     split,
@@ -357,7 +357,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                                     required=False,
                                     tokenization=params.get('TOKENIZATION_METHOD', 'tokenize_none'),
                                     pad_on_batch=params.get('PAD_ON_BATCH', True),
-                                    build_vocabulary=target_dict,
+                                    build_vocabulary=build_vocabulary,
                                     offset=0,
                                     fill=params.get('FILL', 'end'),
                                     max_text_len=params.get('MAX_OUTPUT_TEXT_LEN', 70),
@@ -388,7 +388,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
 
 
                 if len(params['INPUTS_IDS_DATASET']) > 2:
-                    if 'train' in split:
+                    if 'PRED_VOCAB' not in params and 'train' in split:
 
                         ds.setInput(base_path + '/' + params['TEXT_FILES'][split] + ext,
                                     split,
@@ -397,7 +397,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                                     required=False,
                                     tokenization=params.get('TOKENIZATION_METHOD', 'tokenize_none'),
                                     pad_on_batch=params.get('PAD_ON_BATCH', True),
-                                    build_vocabulary=target_dict,
+                                    build_vocabulary=build_vocabulary,
                                     offset=1,
                                     fill=params.get('FILL', 'end'),
                                     max_text_len=params.get('MAX_OUTPUT_TEXT_LEN', 70),
