@@ -184,6 +184,8 @@ def eval_word_qe(gt_list, pred_list, vocab):
     for list in pred_list:
         y_init.extend(list)
 
+    precision_eval, recall_eval, f1_eval = 0.0, 0.0, 0.0
+
     for p in np.arange(0, 1, 0.1):
 
         y_pred = []
@@ -206,6 +208,10 @@ def eval_word_qe(gt_list, pred_list, vocab):
         ref_list = np.array(ref_list)
 
         precision, recall, f1, _ = precision_recall_fscore_support(ref_list, y_pred, average=None)
+
+        if p==0.5:
+           precision_eval, recall_eval, f1_eval = precision, recall, f1
+
         logging.info('**Word QE**')
         logging.info('Threshold %.4f' % p)
         logging.info('Precision %s' % precision)
@@ -213,9 +219,9 @@ def eval_word_qe(gt_list, pred_list, vocab):
         logging.info('F-score %s' % f1)
         logging.info('F-score multi %s' % np.prod(f1))
 
-    return {'precision': precision,
-            'recall': recall,
-            'f1': f1}
+    return {'precision': precision_eval,
+            'recall': recall_eval,
+            'f1_prod': np.prod(f1_eval)}
 
 def eval_sent_qe(gt_list, pred_list, qe_type):
 
