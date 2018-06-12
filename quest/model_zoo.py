@@ -267,7 +267,7 @@ class TranslationModel(Model_Wrapper):
         src_words = Input(name=self.ids_inputs[0],
                           batch_shape=tuple([None, params['MAX_INPUT_TEXT_LEN']]), dtype='int32')
 
-        src_embedding = Embedding(params['OUTPUT_VOCABULARY_SIZE'], params['TARGET_TEXT_EMBEDDING_SIZE'],
+        src_embedding = Embedding(params['INPUT_VOCABULARY_SIZE'], params['TARGET_TEXT_EMBEDDING_SIZE'],
                                   name='src_word_embedding',
                                   embeddings_regularizer=l2(params['WEIGHT_DECAY']),
                                   embeddings_initializer=params['INIT_FUNCTION'],
@@ -351,7 +351,7 @@ class TranslationModel(Model_Wrapper):
     def EncSent(self, params):
         src_words = Input(name=self.ids_inputs[0],
                           batch_shape=tuple([None, params['MAX_INPUT_TEXT_LEN']]), dtype='int32')
-        src_embedding = Embedding(params['OUTPUT_VOCABULARY_SIZE'], params['TARGET_TEXT_EMBEDDING_SIZE'],
+        src_embedding = Embedding(params['INPUT_VOCABULARY_SIZE'], params['TARGET_TEXT_EMBEDDING_SIZE'],
                                   name='src_word_embedding',
                                   embeddings_regularizer=l2(params['WEIGHT_DECAY']),
                                   embeddings_initializer=params['INIT_FUNCTION'],
@@ -451,7 +451,7 @@ class TranslationModel(Model_Wrapper):
         genreshape = GeneralReshape((None, None), params)
         src_words_in = genreshape(src_words)
 
-        src_embedding = Embedding(params['OUTPUT_VOCABULARY_SIZE'], params['TARGET_TEXT_EMBEDDING_SIZE'],
+        src_embedding = Embedding(params['INPUT_VOCABULARY_SIZE'], params['TARGET_TEXT_EMBEDDING_SIZE'],
                                   name='src_word_embedding',
                                   embeddings_regularizer=l2(params['WEIGHT_DECAY']),
                                   embeddings_initializer=params['INIT_FUNCTION'],
@@ -569,7 +569,7 @@ class TranslationModel(Model_Wrapper):
         genreshape = GeneralReshape((None, None), params)
         src_words_in = genreshape(src_words)
 
-        src_embedding = Embedding(params['OUTPUT_VOCABULARY_SIZE'], params['TARGET_TEXT_EMBEDDING_SIZE'],
+        src_embedding = Embedding(params['INPUT_VOCABULARY_SIZE'], params['TARGET_TEXT_EMBEDDING_SIZE'],
                                   name='src_word_embedding',
                                   embeddings_regularizer=l2(params['WEIGHT_DECAY']),
                                   embeddings_initializer=params['INIT_FUNCTION'],
