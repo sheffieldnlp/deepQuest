@@ -225,7 +225,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                          min_occ=params.get('MIN_OCCURRENCES_OUTPUT_VOCAB', 0),
                          bpe_codes=params.get('BPE_CODES_PATH', None))
 
-        elif params['MODEL_TYPE'] == 'EstimatorWord' or params['MODEL_TYPE'] == 'EncWord':
+        elif params['MODEL_TYPE'] == 'EstimatorWord' or params['MODEL_TYPE'] == 'EncWord' or params['MODEL_TYPE'] == 'EncWordAtt':
 
             ds.setOutput(base_path + '/' + params['TEXT_FILES']['train'] + 'tags',
                          'train',
@@ -277,7 +277,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                                  max_words=params.get('OUTPUT_VOCABULARY_SIZE', 0),
                                  bpe_codes=params.get('BPE_CODES_PATH', None))
 
-                elif params['MODEL_TYPE'] == 'EstimatorWord' or params['MODEL_TYPE'] == 'EncWord':
+                elif params['MODEL_TYPE'] == 'EstimatorWord' or params['MODEL_TYPE'] == 'EncWord' or params['MODEL_TYPE'] == 'EncWordAtt':
 
                     ds.setOutput(base_path + '/' + params['TEXT_FILES'][split] + 'tags',
                                  split,

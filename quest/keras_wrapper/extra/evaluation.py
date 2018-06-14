@@ -185,6 +185,9 @@ def eval_word_qe(gt_list, pred_list, vocab):
         y_init.extend(list)
 
     precision_eval, recall_eval, f1_eval = 0.0, 0.0, 0.0
+    prec_list = []
+    recall_list = []
+    f1_list = []
 
     for p in np.arange(0, 1, 0.1):
 
@@ -206,11 +209,11 @@ def eval_word_qe(gt_list, pred_list, vocab):
 
         y_pred = np.array(y_pred)
         ref_list = np.array(ref_list)
-
+        
         precision, recall, f1, _ = precision_recall_fscore_support(ref_list, y_pred, average=None)
-
-        if p==0.5:
-           precision_eval, recall_eval, f1_eval = precision, recall, f1
+        f1_list.append(np.prod(f1))
+        prec_list.append(precision)
+        recall_list.append(recall)
 
         logging.info('**Word QE**')
         logging.info('Threshold %.4f' % p)
@@ -218,10 +221,20 @@ def eval_word_qe(gt_list, pred_list, vocab):
         logging.info('Recall %s' % recall)
         logging.info('F-score %s' % f1)
         logging.info('F-score multi %s' % np.prod(f1))
+        logging.info(' '.join(y_pred))
+  
 
-    return {'precision': precision_eval,
-            'recall': recall_eval,
-            'f1_prod': np.prod(f1_eval)}
+    f1_list = np.array(f1_list)
+    prec_list = np.array(prec_list)
+    recall_list = np.array(recall_list)    
+
+    max_f1 = np.argmax(f1_list)
+    max_prec = np.argmax(prec_list)
+    max_recall = np.argmax(recall_list)
+
+    return {'precision': prec_list[max_f1],
+            'recall': recall_list[max_f1],
+            'f1_prod': f1_list[max_f1]}
 
 def eval_sent_qe(gt_list, pred_list, qe_type):
 
