@@ -175,8 +175,10 @@ def qe_metrics(pred_list, verbose, extra_vars, split, ds, set):
 
 
 def eval_word_qe(gt_list, pred_list, vocab):
+    
     from sklearn.metrics import precision_recall_fscore_support
     import numpy as np
+    from collections import defaultdict
     #print(len(pred_list))
     #print(pred_list)
     y_init = []
@@ -188,8 +190,10 @@ def eval_word_qe(gt_list, pred_list, vocab):
     prec_list = []
     recall_list = []
     f1_list = []
+    res_list = {}
+    thresholds = np.arange(0, 1, 0.1)
 
-    for p in np.arange(0, 1, 0.1):
+    for p in thresholds:
 
         y_pred = []
         ref_list = []
@@ -215,13 +219,15 @@ def eval_word_qe(gt_list, pred_list, vocab):
         prec_list.append(precision)
         recall_list.append(recall)
 
+        res_list[p] = y_pred
+
         logging.info('**Word QE**')
         logging.info('Threshold %.4f' % p)
         logging.info('Precision %s' % precision)
         logging.info('Recall %s' % recall)
         logging.info('F-score %s' % f1)
         logging.info('F-score multi %s' % np.prod(f1))
-        logging.info(' '.join(y_pred))
+        #logging.info(' '.join(y_pred))
   
 
     f1_list = np.array(f1_list)
@@ -229,12 +235,13 @@ def eval_word_qe(gt_list, pred_list, vocab):
     recall_list = np.array(recall_list)    
 
     max_f1 = np.argmax(f1_list)
-    max_prec = np.argmax(prec_list)
-    max_recall = np.argmax(recall_list)
+
 
     return {'precision': prec_list[max_f1],
             'recall': recall_list[max_f1],
-            'f1_prod': f1_list[max_f1]}
+            'f1_prod': f1_list[max_f1],
+            'threshold': thresholds[max_f1],
+            'pred_categorical': res_list}
 
 def eval_sent_qe(gt_list, pred_list, qe_type):
 
@@ -258,7 +265,8 @@ def eval_sent_qe(gt_list, pred_list, qe_type):
 
     return {'pearson': pear_corr,
             'mae': mae,
-            'rmse': rmse}
+            'rmse': rmse,
+            'pred': pred_fin}
 
 
 def multilabel_metrics(pred_list, verbose, extra_vars, split):

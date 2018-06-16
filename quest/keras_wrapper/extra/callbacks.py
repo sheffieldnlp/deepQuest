@@ -421,14 +421,30 @@ class EvalPerformance(KerasCallback):
                         self.model_to_eval.log(s, counter_name, epoch)
                         for metric_ in sorted(metrics):
                             value = metrics[metric_]
-                            # Multiple-output model
-                            if self.gt_pos and self.gt_pos != 0:
-                                metric_ += '_output_' + str(gt_pos)
-                            all_metrics.append(metric_)
-                            header += metric_ + ','
-                            line += str(value) + ','
-                            # Store in model log
-                            self.model_to_eval.log(s, metric_, value)
+                            if metric_ == 'pred':
+
+                                filepath = self.save_path + '/' + s + '_' + counter_name + '_' + str(
+                                    epoch) + '_output_' + str(gt_pos) + '.pred'
+                                import numpy as np
+                                np.savetxt(filepath, value, delimiter='\n', fmt='%.4f')
+                            elif metric_ == 'pred_categorical':
+                                
+                                for threshold in value:
+
+                                    filepath = self.save_path + '/' + s + '_' + counter_name + '_' + str(
+                                        epoch) + '_threshold_'+str(float(("%0.4f"%threshold)))+ '_output_' + str(gt_pos) + '.pred'
+                                    import numpy as np
+                                    np.savetxt(filepath, value[threshold], delimiter='\n', fmt='%s')
+
+                            else:
+                                # Multiple-output model
+                                if self.gt_pos and self.gt_pos != 0:
+                                    metric_ += '_output_' + str(gt_pos)
+                                all_metrics.append(metric_)
+                                header += metric_ + ','
+                                line += str(value) + ','
+                                # Store in model log
+                                self.model_to_eval.log(s, metric_, value)
                         if not self.written_header:
                             f.write(header + '\n')
                             self.written_header = True
@@ -688,6 +704,8 @@ class EarlyStopping(KerasCallback):
         self.verbose = verbose
         self.cum_update = 0
         self.epoch = 0
+
+        self.threshold = self.model_to_eval.getLog(self.check_split, 'threshold')
         # check already stored scores in case we have loaded a pre-trained model
         all_scores = self.model_to_eval.getLog(self.check_split, self.metric_check)
         if self.eval_on_epochs:
@@ -727,6 +745,7 @@ class EarlyStopping(KerasCallback):
 
     def evaluate(self, epoch, counter_name='epoch'):
         current_score = self.model_to_eval.getLog(self.check_split, self.metric_check)[-1]
+        threshold = self.model_to_eval.getLog(self.check_split, 'threshold')[-1]
         # Get last metric value from logs
         if current_score is None:
             warnings.warn('The chosen metric ' + str(self.metric_check) +
@@ -738,9 +757,15 @@ class EarlyStopping(KerasCallback):
         if current_score > self.best_score:
             self.best_epoch = epoch
             self.best_score = current_score
+            self.threshold = threshold
             self.wait = 0
             if self.verbose > 0:
-                logging.info('---current best %s %s: %.3f' % (self.check_split, self.metric_check,
+                if self.threshold is not None:
+                    logging.info('---current best %s %s: %.3f threshold %.1f' % (self.check_split, self.metric_check,
+                                                              current_score if not self.want_to_minimize
+                                                              else -current_score, self.threshold))
+                else:
+                    logging.info('---current best %s %s: %.3f' % (self.check_split, self.metric_check,
                                                               current_score if not self.want_to_minimize
                                                               else -current_score))
 
@@ -750,9 +775,15 @@ class EarlyStopping(KerasCallback):
             logging.info('---bad counter: %d/%d' % (self.wait, self.patience))
             if self.wait >= self.patience:
                 if self.verbose > 0:
-                    logging.info("---%s %d: early stopping. Best %s found at %s %d: %f" % (
-                        str(counter_name), epoch, self.metric_check, str(counter_name), self.best_epoch,
-                        self.best_score if not self.want_to_minimize else -self.best_score))
+                    if self.threshold is not None:
+                        logging.info("---%s %d: early stopping. Best %s found at %s %d: %f threshold %.1f" % (
+                             str(counter_name), epoch, self.metric_check, str(counter_name), self.best_epoch,
+                             self.best_score if not self.want_to_minimize else -self.best_score, self.threshold))
+                    else:
+                        logging.info("---%s %d: early stopping. Best %s found at %s %d: %f" % ( 
+                             str(counter_name), epoch, self.metric_check, str(counter_name), self.best_epoch,
+                             self.best_score if not self.want_to_minimize else -self.best_score))
+
                 self.model.stop_training = True
                 exit(1)
 
