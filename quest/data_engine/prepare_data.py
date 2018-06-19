@@ -227,7 +227,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
 
         elif params['MODEL_TYPE'] == 'EstimatorWord' or params['MODEL_TYPE'] == 'EncWord' or params['MODEL_TYPE'] == 'EncWordAtt':
 
-            ds.setOutput(base_path + '/' + params['TEXT_FILES']['train'] + 'tags',
+            ds.setOutput(base_path + '/' + params['TEXT_FILES']['train'] + params['PRED_SCORE'],
                          'train',
                          type='text',
                          id=params['OUTPUTS_IDS_DATASET'][0],
@@ -279,7 +279,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
 
                 elif params['MODEL_TYPE'] == 'EstimatorWord' or params['MODEL_TYPE'] == 'EncWord' or params['MODEL_TYPE'] == 'EncWordAtt':
 
-                    ds.setOutput(base_path + '/' + params['TEXT_FILES'][split] + 'tags',
+                    ds.setOutput(base_path + '/' + params['TEXT_FILES'][split] + params['PRED_SCORE'],
                                  split,
                                  type='text',
                                  id=params['OUTPUTS_IDS_DATASET'][0],
@@ -309,8 +309,8 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
         ext = params['TRG_LAN']
         target_dict='target_text'
 
-        if params['MODEL_TYPE'] != 'Predictor':
-            ext = 'mt'
+        #if params['MODEL_TYPE'] != 'Predictor':
+        #    ext = 'mt'
         
         for split in ['train', 'val', 'test']:
             if params['TEXT_FILES'].get(split) is not None:
