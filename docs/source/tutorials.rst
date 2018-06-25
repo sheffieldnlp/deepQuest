@@ -119,7 +119,7 @@ Once all the training parameters are defined in the configuration file, one can 
 
     export KERAS_BACKEND=theano
     export MKL_THREADING_LAYER=GNU
-    THEANO_FLAGS=device=cuda{1,0} python main.py --config config.py |tee -a /tmp/deepQuest.log 2>&1 &
+    THEANO_FLAGS=device=cuda{1,0} python main.py --config config.py | tee -a /tmp/deepQuest.log 2>&1 &
 
 One can observe the progression of the training in the log file created in the temporary directory.
 
@@ -128,7 +128,7 @@ Scoring
 *******
 
 Test sets are scored after each epoch using the standard tests from the `WMT QE Shared task`_ metrics, with an inbuilt procedure.
-New test sets with already trained models can be scored by launching the same command as for training. Change the following parameters in your initial config (see `configs/example_config-sentQEbRNNEval.py`_ for an example, for now the scring procedure is tested only for the sentence-level QE models):
+New test sets with already trained models can be scored by launching the same command as for training. Change the following parameters in your initial config (see `configs/config-sentQEbRNNEval.py`_ for an example, for now the scoring procedure is tested only for the sentence-level QE models):
 
   | ``EVAL_ON_SETS`` -- specify the set for scoring
   | ``PRED_WEIGHTS`` -- set the path to the pre-trained weights (as dumped to the trained_models/{model_name} folder) of the model that would be used for scoring
@@ -136,3 +136,4 @@ New test sets with already trained models can be scored by launching the same co
  
 
 .. _`WMT QE Shared task`: http://www.statmt.org/wmt18/quality-estimation-task.html
+.. _configs/config-sentQEbRNNEval.py: https://github.com/sheffieldnlp/deepQuest/blob/master/configs/config-sentQEbRNNEval.py
