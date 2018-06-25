@@ -214,10 +214,34 @@ def apply_NMT_model(params, load_dataset=None):
     else:
         dataset = loadDataset(load_dataset)
     params['INPUT_VOCABULARY_SIZE'] = dataset.vocabulary_len[params['INPUTS_IDS_DATASET'][0]]
-    params['OUTPUT_VOCABULARY_SIZE'] = dataset.vocabulary_len[params['OUTPUTS_IDS_DATASET'][0]]
+    #params['OUTPUT_VOCABULARY_SIZE'] = dataset.vocabulary_len[params['OUTPUTS_IDS_DATASET'][0]]
+    vocab_y = dataset.vocabulary[params['INPUTS_IDS_DATASET'][1]]['idx2words']
 
     # Load model
-    nmt_model = loadModel(params['STORE_PATH'], params['RELOAD'], reload_epoch=params['RELOAD_EPOCH'])
+    #nmt_model = loadModel(params['STORE_PATH'], params['RELOAD'], reload_epoch=params['RELOAD_EPOCH'])
+    nmt_model = TranslationModel(params,
+                                     model_type=params['MODEL_TYPE'],
+                                     verbose=params['VERBOSE'],
+                                     model_name=params['MODEL_NAME'],
+                                     vocabularies=dataset.vocabulary,
+                                     store_path=params['STORE_PATH'],
+                                     set_optimizer=False,
+                                     trainable_pred=False, trainable_est=False,
+                                     weights_path=parameters.get('PRED_WEIGHTS', None))
+    
+    inputMapping = dict()
+    for i, id_in in enumerate(params['INPUTS_IDS_DATASET']):
+        pos_source = dataset.ids_inputs.index(id_in)
+        id_dest = nmt_model.ids_inputs[i]
+        inputMapping[id_dest] = pos_source
+    nmt_model.setInputsMapping(inputMapping)
+
+    outputMapping = dict()
+    for i, id_out in enumerate(params['OUTPUTS_IDS_DATASET']):
+        pos_target = dataset.ids_outputs.index(id_out)
+        id_dest = nmt_model.ids_outputs[i]
+        outputMapping[id_dest] = pos_target
+    nmt_model.setOutputsMapping(outputMapping)
     nmt_model.setOptimizer()
 
     for s in params["EVAL_ON_SETS"]:
@@ -229,7 +253,8 @@ def apply_NMT_model(params, load_dataset=None):
                       'apply_detokenization': params['APPLY_DETOKENIZATION'],
                       'tokenize_hypotheses': params['TOKENIZE_HYPOTHESES'],
                       'tokenize_references': params['TOKENIZE_REFERENCES']}
-        vocab = dataset.vocabulary[params['OUTPUTS_IDS_DATASET'][0]]['idx2words']
+        #vocab = dataset.vocabulary[params['OUTPUTS_IDS_DATASET'][0]]['idx2words']
+        vocab = dataset.vocabulary[params['INPUTS_IDS_DATASET'][1]]['idx2words']
         extra_vars[s] = dict()
         extra_vars[s]['references'] = dataset.extra_variables[s][params['OUTPUTS_IDS_DATASET'][0]]
         input_text_id = None

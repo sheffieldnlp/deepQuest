@@ -8,7 +8,7 @@ def load_parameters():
     TASK_NAME = 'qe-2016'                           # Task name
     DATASET_NAME = TASK_NAME                        # Dataset name
     SRC_LAN = 'src'                                  # Language of the source text
-    TRG_LAN = 'pe'                                  # Language of the target text
+    TRG_LAN = 'mt'                                  # Language of the target text
     DATA_ROOT_PATH = 'examples/%s/' % DATASET_NAME  # Path where data is stored
 
     # SRC_LAN or TRG_LAN will be added to the file names

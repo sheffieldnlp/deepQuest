@@ -21,12 +21,9 @@ The first step is to create a configuration file (see `configs/example_config-Wo
 .. _configs/example_config-WordQE.py: https://github.com/sheffieldnlp/deepQuest/blob/master/configs/example_config-WordQE.py
 
   | ``TASK_NAME``: name given to the task; 
-  | ``SRC_LAN``, ``TRG_LAN``: source and target language of the task;
+  | ``SRC_LAN``, ``TRG_LAN``: extensions of correspnding source language and MT files (target language file for Predictor);
   | ``DATA_ROOT_PATH``: directory where to find the data;
   | ``TEXT_FILES``: a (Python) dictionary that contains the names of the training, development and test sets (*without extension*).
-  |
-  | **Note**: for models other than Predictor takes a file with the extension '.mt' by default no matter what is set in ``TRG_LAN``, so that if Predictors and Estimators are trained consecutively (like in a Multi-Task Learning setting) both reference file with the extension .TRG_LAN and .mt file can be stored in a single folder.
-
 
 0. ``INPUTS_IDS_DATASETS`` -- defines the datasets used to train the QE model
 
@@ -131,6 +128,11 @@ Scoring
 *******
 
 Test sets are scored after each epoch using the standard tests from the `WMT QE Shared task`_ metrics, with an inbuilt procedure.
-The procedure to score new test sets with already trained models, is to be implemented. 
+New test sets with already trained models can be scored by launching the same command as for training. Change the following parameters in your initial config (see `configs/example_config-sentQEbRNNEval.py`_ for an example, for now the scring procedure is tested only for the sentence-level QE models):
+
+  | ``EVAL_ON_SETS`` -- specify the set for scoring
+  | ``PRED_WEIGHTS`` -- set the path to the pre-trained weights (as dumped to the trained_models/{model_name} folder) of the model that would be used for scoring
+  | ``MODE`` -- set to 'sampling'
+ 
 
 .. _`WMT QE Shared task`: http://www.statmt.org/wmt18/quality-estimation-task.html

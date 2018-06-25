@@ -13,30 +13,32 @@ def load_parameters():
 
     # SRC_LAN or TRG_LAN will be added to the file names
     TEXT_FILES = {'train': 'train.',        # Data files
-                  'val': 'test.',
+                  'val': 'dev.',
                   'test': 'test.'}
 
     # Dataset class parameters
     INPUTS_IDS_DATASET = ['source_text', 'target_text']     # Corresponding inputs of the dataset
-    #OUTPUTS_IDS_DATASET_FULL = ['target_text', 'word_qe', 'sent_qe']                   # Corresponding outputs of the dataset
-    OUTPUTS_IDS_DATASET = ['word_qe']
+    #OUTPUTS_IDS_DATASET_FULL = ['target_text', 'word_qe', 'sent_hter']                   # Corresponding outputs of the dataset
+    OUTPUTS_IDS_DATASET = ['sent_qe']
     INPUTS_IDS_MODEL = ['source_text', 'target_text']       # Corresponding inputs of the built model
-    #OUTPUTS_IDS_MODEL_FULL = ['target_text','word_qe', 'sent_qe']                     # Corresponding outputs of the built model
-    OUTPUTS_IDS_MODEL = ['word_qe']
+    #OUTPUTS_IDS_MODEL_FULL = ['target_text','word_qe', 'sent_hter']                     # Corresponding outputs of the built model
+    OUTPUTS_IDS_MODEL = ['sent_qe']
     WORD_QE_CLASSES = 5
-    PRED_SCORE='hter'
+    PRED_SCORE='hternorm'
 
     # Evaluation params
     METRICS = ['qe_metrics']                            # Metric used for evaluating the model
     #KERAS_METRICS = ['pearson_corr', 'mae', 'rmse']
-    EVAL_ON_SETS = ['val']                        # Possible values: 'train', 'val' and 'test' (external evaluator)
+    EVAL_ON_SETS = ['test']                        # Possible values: 'train', 'val' and 'test' (external evaluator)
     #EVAL_ON_SETS_KERAS = ['val']                       #  Possible values: 'train', 'val' and 'test' (Keras' evaluator). Untested.
     EVAL_ON_SETS_KERAS = []
     START_EVAL_ON_EPOCH = 1                      # First epoch to start the model evaluation
     EVAL_EACH_EPOCHS = True                       # Select whether evaluate between N epochs or N updates
     EVAL_EACH = 1                                 # Sets the evaluation frequency (epochs or updates)
 
-    PRED_VOCAB = 'euro-en-de-model-latest/Dataset_euro-en-de_ende.pkl'
+    #PRED_VOCAB = '/Users/ive/Documents/nmt-keras/datasets/Dataset_EuTrans_esen.pkl'
+    #PRED_VOCAB = 'euro-en-de-model-latest/Dataset_euro-en-de_ende.pkl'
+    PRED_WEIGHTS='trained_models/qe-2016_srcmt_EncSent_src_emb_300_bidir_True_enc_GRU_50_dec_ConditionalGRU_500_deepout_linear_trg_emb_300_Adadelta_1.0/epoch_3_weights.h5'
     MULTI_TASK = False
 
     # Search parameters
@@ -161,15 +163,15 @@ def load_parameters():
 
     # Early stop parameters
     EARLY_STOP = True                             # Turns on/off the early stop protocol
-    PATIENCE = 5                                 # We'll stop if the val STOP_METRIC does not improve after this
+    PATIENCE = 5                        # We'll stop if the val STOP_METRIC does not improve after this
                                                   # number of evaluations
 
     # was used for NMT
-    STOP_METRIC = 'f1_prod'                        # Metric for the stop
+    STOP_METRIC = 'pearson'                        # Metric for the stop
 
     # Model parameters
     # Perictor+Estimator
-    MODEL_TYPE = 'EncWord'                 # Model to train. See model_zoo() for the supported architectures
+    MODEL_TYPE = 'EncSent'                 # Model to train. See model_zoo() for the supported architectures
 
     # only Predictor
     #MODEL_TYPE = 'Predictor'
@@ -265,7 +267,7 @@ def load_parameters():
     RELOAD_EPOCH = True                                # Select whether we reload epoch or update number
 
     REBUILD_DATASET = True                             # Build again or use stored instance
-    MODE = 'training'                                  # 'training' or 'sampling' (if 'sampling' then RELOAD must
+    MODE = 'sampling'                                  # 'training' or 'sampling' (if 'sampling' then RELOAD must
                                                        # be greater than 0 and EVAL_ON_SETS will be used)
 
     # Extra parameters for special trainings
