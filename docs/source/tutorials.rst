@@ -131,9 +131,48 @@ Test sets are scored after each epoch using the standard tests from the `WMT QE 
 New test sets with already trained models can be scored by launching the same command as for training. Change the following parameters in your initial config (see `configs/config-sentQEbRNNEval.py`_ for an example, for now the scoring procedure is tested only for the sentence-level QE models):
 
   | ``EVAL_ON_SETS`` -- specify the set for scoring
+  | ``PRED_VOCAB`` -- set the path to the vocabulary of the pre-trained model (as dumped to the datasets/Dataset_{task_name}_{src_extension}{trg_extension}.pkl folder)
   | ``PRED_WEIGHTS`` -- set the path to the pre-trained weights (as dumped to the trained_models/{model_name} folder) of the model that would be used for scoring
   | ``MODE`` -- set to 'sampling'
  
 
 .. _`WMT QE Shared task`: http://www.statmt.org/wmt18/quality-estimation-task.html
 .. _configs/config-sentQEbRNNEval.py: https://github.com/sheffieldnlp/deepQuest/blob/master/configs/config-sentQEbRNNEval.py
+
+
+We also provide two scripts to train and test Sentence QE models for biRNN and POSTECH (`configs/train-test-sentQEbRNN.sh`_ and `configs/train-test-sentQEPostech.sh`_ respectively). Assuming that correct environment is already activated and all the environmental variables are set:
+
+1. Copy the necessary BiRNN shell script to the 'quest' folder.
+2. Sentence QE data in the format compatible for deepQuest could be downloaded, for example, from the `WMT QE Shared task 2016`_ page. 
+
+Make sure to put train, dev and test files in one folder, e.g., 'quest/examples/qe-2016' ('examples' folder is used for data storage).
+
+3. Launch the script from the 'quest' folder. Specify the name of the folder, extensions of the source and machine-translated files, as well the cuda device (specify 'cpu' to train on cpus):
+
+.. code:: bash
+ 
+  ./train-test-sentQEbRNN.sh --task qe-2016 --source src --target mt --score hter --device cuda0 &
+
+The corresponding log is outputted to: quest/log-qe-2016_srcmt_EncSent.txt
+
+The script will output the information on the number of the best epoch, e.g. 18.
+The best model weights are in: trained_models/qe-2016_srcmt_EncSent/epoch_18_weights.h5
+The resulting test scores are in trained_models/qe-2016_srcmt_EncSent/test_epoch_18_output_0.pred
+
+For Predictor pre-training, parallel data containing human reference translations should be prepared. For example, the `Europarl`_ corpus can be used. The data can be pre-proccesed in a standard `Moses`_ pipeline (Corpus Preparation section). Typically, around 2M of parallel lines are used for training and 3K lines for testing (small Predictor model).
+
+Assuming the Europarl training (train.{en,de}) and test data (test.{en,de}) were put into 'quest/examples/europarl-en-de', launch the train-test-sentQEPostech.sh copied to the 'quest' folder:
+
+.. code:: bash
+
+  ./train-test-sentQEPostech.sh --pred-task europarl-en-de --pred-source en --pred-target de --est-task qe-2016 --est-source src --est-target mt --score hter --device cuda0 &
+
+The corresponding log is outputted to: quest/log-qe-2016_srcmt_EncSent.txt
+The best model and test scores are outputted as for BiRNN.
+
+.. _`Europarl`: http://opus.nlpl.eu/Europarl.php
+.. _`WMT QE Shared task 2016`: http://www.statmt.org/wmt16/quality-estimation-task.html
+.. _`configs/train-test-sentQEbRNN.sh`: https://github.com/sheffieldnlp/deepQuest/blob/master/configs/train-test-sentQEbRNN.sh
+.. _`configs/train-test-sentQEPostech.sh`: https://github.com/sheffieldnlp/deepQuest/blob/master/configs/train-test-sentQEPostech.sh
+.. _`Moses`: http://www.statmt.org/moses/?n=Moses.Baseline
+

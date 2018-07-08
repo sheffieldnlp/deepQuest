@@ -207,13 +207,18 @@ def apply_NMT_model(params, load_dataset=None):
     :param load_dataset: Load dataset from file or build it from the parameters.
     :return: None
     """
-
-    # Load data
-    if load_dataset is None:
-        dataset = build_dataset(params)
+    pred_vocab = params.get('PRED_VOCAB', None)
+    if pred_vocab is not None:
+        dataset_voc = loadDataset(params['PRED_VOCAB'])
+        dataset = build_dataset(params, dataset_voc.vocabulary, dataset_voc.vocabulary_len)
     else:
-        dataset = loadDataset(load_dataset)
-    params['INPUT_VOCABULARY_SIZE'] = dataset.vocabulary_len[params['INPUTS_IDS_DATASET'][0]]
+        dataset = build_dataset(params)
+    # Load data
+    #if load_dataset is None:
+    #    dataset = build_dataset(params)
+    #else:
+    #    dataset = loadDataset(load_dataset)
+    #params['INPUT_VOCABULARY_SIZE'] = dataset.vocabulary_len[params['INPUTS_IDS_DATASET'][0]]
     #params['OUTPUT_VOCABULARY_SIZE'] = dataset.vocabulary_len[params['OUTPUTS_IDS_DATASET'][0]]
     vocab_y = dataset.vocabulary[params['INPUTS_IDS_DATASET'][1]]['idx2words']
 
@@ -457,15 +462,24 @@ if __name__ == "__main__":
             except ValueError:
                 print 'Overwritten arguments must have the form key=Value. \n Currently are: %s' % str(args.changes)
                 exit(1)
-            try:
-                parameters[k] = ast.literal_eval(v)
-            except ValueError:
+            if '_' in v:
                 parameters[k] = v
+            else:
+                try:
+                    parameters[k] = ast.literal_eval(v)
+                except ValueError:
+                    parameters[k] = v
     except ValueError:
         print 'Error processing arguments: (', k, ",", v, ")"
         exit(2)
 
     check_params(parameters)
+    
+    new_eval_sets=parameters.get('NEW_EVAL_ON_SETS', None)
+    if new_eval_sets != None:
+        set_ar = parameters['NEW_EVAL_ON_SETS'].split(',')
+        parameters['EVAL_ON_SETS'] = set_ar
+    
     if parameters['MODE'] == 'training':
 
         if parameters['MULTI_TASK']:
