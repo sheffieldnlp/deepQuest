@@ -135,6 +135,7 @@ New test sets with already trained models can be scored by launching the same co
   | ``PRED_WEIGHTS`` -- set the path to the pre-trained weights (as dumped to the trained_models/{model_name} folder) of the model that would be used for scoring
   | ``MODE`` -- set to 'sampling'
  
+Note that the scoring procedure requires a file with gold-standard labels. Create a dummy file with, for example, random scores if you do not gold-standard labels.
 
 .. _`WMT QE Shared task`: http://www.statmt.org/wmt18/quality-estimation-task.html
 .. _configs/config-sentQEbRNNEval.py: https://github.com/sheffieldnlp/deepQuest/blob/master/configs/config-sentQEbRNNEval.py
@@ -151,24 +152,28 @@ Make sure to put train, dev and test files in one folder, e.g., 'quest/examples/
 
 .. code:: bash
  
+  cd deepQuest/quest
+  cp ../configs/train-test-sentQEbRNN.sh .  
   ./train-test-sentQEbRNN.sh --task qe-2016 --source src --target mt --score hter --device cuda0 &
 
-The corresponding log is outputted to: quest/log-qe-2016_srcmt_EncSent.txt
+The corresponding log is in quest/log-qe-2016_srcmt_EncSent.txt
 
 The script will output the information on the number of the best epoch, e.g. 18.
-The best model weights are in: trained_models/qe-2016_srcmt_EncSent/epoch_18_weights.h5
+The best model weights are in trained_models/qe-2016_srcmt_EncSent/epoch_18_weights.h5
 The resulting test scores are in trained_models/qe-2016_srcmt_EncSent/test_epoch_18_output_0.pred
 
-For Predictor pre-training, parallel data containing human reference translations should be prepared. For example, the `Europarl`_ corpus can be used. The data can be pre-proccesed in a standard `Moses`_ pipeline (Corpus Preparation section). Typically, around 2M of parallel lines are used for training and 3K lines for testing (small Predictor model).
+For POSTECH Predictor pre-training, parallel data containing human reference translations should be prepared. For example, the `Europarl`_ corpus can be used. The data can be pre-proccesed in a standard `Moses`_ pipeline (Corpus Preparation section). Typically, around 2M of parallel lines are used for training and 3K lines for testing (small Predictor model).
 
-Assuming the Europarl training (train.{en,de}) and test data (test.{en,de}) were put into 'quest/examples/europarl-en-de', launch the train-test-sentQEPostech.sh copied to the 'quest' folder:
+Assuming the Europarl training (train.{en,de}) and test data (test.{en,de}) are in 'quest/examples/europarl-en-de', launch the train-test-sentQEPostech.sh script:
 
 .. code:: bash
 
+  cd deepQuest/quest
+  cp ../configs/train-test-sentQEPostech.sh .  
   ./train-test-sentQEPostech.sh --pred-task europarl-en-de --pred-source en --pred-target de --est-task qe-2016 --est-source src --est-target mt --score hter --device cuda0 &
 
-The corresponding log is outputted to: quest/log-qe-2016_srcmt_EncSent.txt
-The best model and test scores are outputted as for BiRNN.
+The corresponding logs are in quest/log-europarl-en-de_ende_Predictor.txt and quest/log-qe-2016_srcmt_EstimatorSent.txt
+The best model and test scores are stored as for BiRNN.
 
 .. _`Europarl`: http://opus.nlpl.eu/Europarl.php
 .. _`WMT QE Shared task 2016`: http://www.statmt.org/wmt16/quality-estimation-task.html
