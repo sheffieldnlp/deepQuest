@@ -135,11 +135,13 @@ New test sets with already trained models can be scored by launching the same co
   | ``PRED_WEIGHTS`` -- set the path to the pre-trained weights (as dumped to the trained_models/{model_name} folder) of the model that would be used for scoring
   | ``MODE`` -- set to 'sampling'
  
-Note that the scoring procedure requires a file with gold-standard labels. Create a dummy file with, for example, random scores if you do not gold-standard labels.
+Note that the scoring procedure requires a file with gold-standard labels. Create a dummy file with, for example, random scores if you do not have gold-standard labels.
 
 .. _`WMT QE Shared task`: http://www.statmt.org/wmt18/quality-estimation-task.html
 .. _configs/config-sentQEbRNNEval.py: https://github.com/sheffieldnlp/deepQuest/blob/master/configs/config-sentQEbRNNEval.py
 
+Examples
+********
 
 We also provide two scripts to train and test Sentence QE models for biRNN and POSTECH (`configs/train-test-sentQEbRNN.sh`_ and `configs/train-test-sentQEPostech.sh`_ respectively). Assuming that correct environment is already activated and all the environmental variables are set:
 
