@@ -76,7 +76,8 @@ model_type=EncSent
 model_name=${task_name}_${src}${trg}_${model_type}
 patience=10
 
-cp ../configs/$conf ./config.py
+rm -rf config.*
+ln -s ../configs/$conf ./config.py
 
 echo "Traning the model "${model_name}
 THEANO_FLAGS=device=$device python main.py TASK_NAME=$task_name DATASET_NAME=$task_name DATA_ROOT_PATH=examples/${task_name} SRC_LAN=${src} TRG_LAN=${trg} PRED_SCORE=$score MODEL_TYPE=$model_type NEW_EVAL_ON_SETS=val PATIENCE=$patience SAVE_EACH_EVALUATION=True > log-${model_name}-prep.txt 2>&1

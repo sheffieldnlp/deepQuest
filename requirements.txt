@@ -1,5 +1,4 @@
 numpy
-theano
 toolz
 -e git+https://github.com/lvapeab/coco-caption.git#egg=coco-caption
 cloud

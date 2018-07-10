@@ -97,7 +97,8 @@ pred_conf=config-Predictor-small.py
 pred_model_type=Predictor
 pred_model_name=${pred_task_name}_${pred_src}${pred_trg}_${pred_model_type}
 
-cp ../configs/$pred_conf ./config.py
+rm -rf config.*
+ln -s ../configs/$pred_conf ./config.py
 
 echo "Traning the model "${pred_model_name}
 THEANO_FLAGS=device=$device python main.py TASK_NAME=$pred_task_name DATASET_NAME=$pred_task_name DATA_ROOT_PATH=examples/${pred_task_name} SRC_LAN=${pred_src} TRG_LAN=${pred_trg} MODEL_TYPE=$pred_model_type MAX_EPOCH=2 SAVE_EACH_EVALUATION=True > log-${pred_model_name}.txt 2>&1
@@ -112,7 +113,8 @@ patience=5
 pred_vocab=datasets/Dataset_${pred_task_name}_${pred_src}${pred_trg}.pkl
 pred_weights=trained_models/${pred_model_name}/epoch_2_weights.h5
 
-cp ../configs/$est_conf ./config.py
+rm -rf config.*
+ln -s ../configs/$est_conf ./config.py
 
 echo "Traning the model "${est_model_name}
 THEANO_FLAGS=device=$device python main.py TASK_NAME=$est_task_name DATASET_NAME=$est_task_name DATA_ROOT_PATH=examples/${est_task_name} SRC_LAN=${est_src} TRG_LAN=${est_trg} PRED_SCORE=$score PRED_VOCAB=$pred_vocab PRED_WEIGHTS=$pred_weights MODEL_TYPE=$est_model_type NEW_EVAL_ON_SETS=val PATIENCE=$patience SAVE_EACH_EVALUATION=True > log-${est_model_name}-prep.txt 2>&1

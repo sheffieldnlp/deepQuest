@@ -113,13 +113,13 @@ The first step is to create a configuration file (see `configs/example_config-Wo
 
 
 
-Once all the training parameters are defined in the configuration file, one can run the training of the QE model as follows:
+Once all the training parameters are defined in the configuration file quest/config.py, one can run the training of the QE model as follows:
 
   .. code:: bash 
 
     export KERAS_BACKEND=theano
     export MKL_THREADING_LAYER=GNU
-    THEANO_FLAGS=device=cuda{1,0} python main.py --config config.py | tee -a /tmp/deepQuest.log 2>&1 &
+    THEANO_FLAGS=device={device_name} python main.py | tee -a /tmp/deepQuest.log 2>&1 &
 
 One can observe the progression of the training in the log file created in the temporary directory.
 
@@ -135,7 +135,12 @@ New test sets with already trained models can be scored by launching the same co
   | ``PRED_WEIGHTS`` -- set the path to the pre-trained weights (as dumped to the trained_models/{model_name} folder) of the model that would be used for scoring
   | ``MODE`` -- set to 'sampling'
  
-Note that the scoring procedure requires a file with gold-standard labels. Create a dummy file with, for example, random scores if you do not have gold-standard labels.
+**Note** that the scoring procedure requires a file with gold-standard labels. Create a dummy file with, for example, zero scores if you do not have gold-standard labels. Assuming your machine-translated file is test.mt and you want to generate dummy HTER scores:
+
+ .. code:: bash 
+
+   for i in `seq $(wc -l test.mt | cut -d ' ' -f 1)`; do echo "0.0000"; done > test.hter
+
 
 .. _`WMT QE Shared task`: http://www.statmt.org/wmt18/quality-estimation-task.html
 .. _configs/config-sentQEbRNNEval.py: https://github.com/sheffieldnlp/deepQuest/blob/master/configs/config-sentQEbRNNEval.py
@@ -163,6 +168,8 @@ The corresponding log is in quest/log-qe-2016_srcmt_EncSent.txt
 The script will output the information on the number of the best epoch, e.g. 18.
 The best model weights are in trained_models/qe-2016_srcmt_EncSent/epoch_18_weights.h5
 The resulting test scores are in trained_models/qe-2016_srcmt_EncSent/test_epoch_18_output_0.pred
+
+**Note** If you try to launch the scripts with your data and you do not have gold-standard labels for your test data cf. the respective note in the `Scoring`_ section.
 
 For POSTECH Predictor pre-training, parallel data containing human reference translations should be prepared. For example, the `Europarl`_ corpus can be used. The data can be pre-proccesed in a standard `Moses`_ pipeline (Corpus Preparation section). Typically, around 2M of parallel lines are used for training and 3K lines for testing (small Predictor model).
 
