@@ -6,9 +6,9 @@ DeepQuest is written in Python and we highly recommend that you use a Conda_ in 
 
 Assuming you are working in a dedicated Python environment, get DeepQuest as follows::
 
-    git clone git@github.com:sheffieldnlp/deepQuest.git
-    conda install theano
+    git clone https://github.com/sheffieldnlp/deepQuest.git
     cd deepQuest
+    conda install theano
     pip install -r requirements.txt
 
 Computational Requirements
