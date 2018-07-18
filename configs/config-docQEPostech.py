@@ -24,8 +24,8 @@ def load_parameters():
     #OUTPUTS_IDS_MODEL_FULL = ['target_text','word_qe', 'sent_hter']                     # Corresponding outputs of the built model
     OUTPUTS_IDS_MODEL = ['doc_qe']
     WORD_QE_CLASSES = 5
-    DOC_SIZE = 43
-    DOC_ACTIVATION='sigmoid'
+    SECOND_DIM_SIZE = 43
+    OUT_ACTIVATION='sigmoid'
     PRED_SCORE = 'bleu'
 
     # Evaluation params

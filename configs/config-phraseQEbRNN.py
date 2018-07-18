@@ -5,28 +5,29 @@ def load_parameters():
     """
 
     # Input data params
-    TASK_NAME = 'english-spanish-all'                           # Task name
+    TASK_NAME = 'de_en.smt3b'                           # Task name
     DATASET_NAME = TASK_NAME                        # Dataset name
-    SRC_LAN = 'en'                                  # Language of the source text
-    TRG_LAN = 'es'                                  # Language of the target text
+    SRC_LAN = 'src'                                  # Language of the source text
+    TRG_LAN = 'mtgaps'                                  # Language of the target text
     DATA_ROOT_PATH = 'examples/%s/' % DATASET_NAME  # Path where data is stored
 
     # SRC_LAN or TRG_LAN will be added to the file names
-    TEXT_FILES = {'train': 'train.',        # Data files
-                  'val': 'dev.',
-                  'test': 'test.'}
+    TEXT_FILES = {'train': 'task3b.train.',        # Data files
+                  'val': 'task3b.dev.',
+                  'test': 'task3b.test.'}
 
     # Dataset class parameters
     INPUTS_IDS_DATASET = ['source_text', 'target_text']     # Corresponding inputs of the dataset
-    #OUTPUTS_IDS_DATASET_FULL = ['target_text', 'word_qe', 'sent_hter']                   # Corresponding outputs of the dataset
-    OUTPUTS_IDS_DATASET = ['doc_qe']
+    #OUTPUTS_IDS_DATASET_FULL = ['target_text', 'word_qe', 'sent_qe']                   # Corresponding outputs of the dataset
+    OUTPUTS_IDS_DATASET = ['phrase_qe']
     INPUTS_IDS_MODEL = ['source_text', 'target_text']       # Corresponding inputs of the built model
-    #OUTPUTS_IDS_MODEL_FULL = ['target_text','word_qe', 'sent_hter']                     # Corresponding outputs of the built model
-    OUTPUTS_IDS_MODEL = ['doc_qe']
-    WORD_QE_CLASSES = 5
-    SECOND_DIM_SIZE = 43
-    OUT_ACTIVATION='sigmoid'
-    PRED_SCORE = 'bleu'
+    #OUTPUTS_IDS_MODEL_FULL = ['target_text','word_qe', 'sent_qe']                     # Corresponding outputs of the built model
+    OUTPUTS_IDS_MODEL = ['phrase_qe']
+    PHRASE_QE_CLASSES = 5
+    PRED_SCORE='gaps'
+    SECOND_DIM_SIZE = 31
+    WORD_MERGE_MODE='sum'
+
 
     # Evaluation params
     METRICS = ['qe_metrics']                            # Metric used for evaluating the model
@@ -38,7 +39,7 @@ def load_parameters():
     EVAL_EACH_EPOCHS = True                       # Select whether evaluate between N epochs or N updates
     EVAL_EACH = 1                                 # Sets the evaluation frequency (epochs or updates)
 
-    PRED_VOCAB = 'vocabs-coling/Dataset_predictor-en-es-euro-newscom-small_enes.pkl'
+    #PRED_VOCAB = '/data/cscarton/deepQuest/datasets/Dataset_wmt18-de-en-predictor_deen.pkl'
     MULTI_TASK = False
 
     # Search parameters
@@ -114,13 +115,14 @@ def load_parameters():
                                                   # otherwise it will be truncated to these most frequent words.
     MIN_OCCURRENCES_INPUT_VOCAB = 0               # Minimum number of occurrences allowed for the words in the input vocabulary.
                                                   # Set to 0 for using them all.
-    MAX_INPUT_TEXT_LEN = 70                       # Maximum length of the input sequence
+    MAX_SRC_INPUT_TEXT_LEN = 70                       # Maximum length of the input sequence
+    MAX_TRG_INPUT_TEXT_LEN = 3     
 
     # Output text parameters
     OUTPUT_VOCABULARY_SIZE = 30000                    # Size of the input vocabulary. Set to 0 for using all,
                                                   # otherwise it will be truncated to these most frequent words.
     MIN_OCCURRENCES_OUTPUT_VOCAB = 0              # Minimum number of occurrences allowed for the words in the output vocabulary.
-    MAX_OUTPUT_TEXT_LEN = 70                      # Maximum length of the output sequence
+    MAX_OUTPUT_TEXT_LEN = SECOND_DIM_SIZE                      # Maximum length of the output sequence
                                                   # set to 0 if we want to use the whole answer as a single class
     MAX_OUTPUT_TEXT_LEN_TEST = MAX_OUTPUT_TEXT_LEN * 3  # Maximum length of the output sequence during test time
 
@@ -134,7 +136,7 @@ def load_parameters():
     LR = 1.0                                    # Learning rate. Recommended values - Adam 0.001 - Adadelta 1.0
     CLIP_C = 1.                                   # During training, clip L2 norm of gradients to this value (0. means deactivated)
     CLIP_V = 0.                                   # During training, clip absolute value of gradients to this value (0. means deactivated)
-    SAMPLE_WEIGHTS = {'word_qe': {'BAD': 3}}                        # Select whether we use a weights matrix (mask) for the data outputs
+    SAMPLE_WEIGHTS = {'phrase_qe': {'BAD': 25}}                        # Select whether we use a weights matrix (mask) for the data outputs
     # Learning rate annealing
     LR_DECAY = None                               # Frequency (number of epochs or updates) between LR annealings. Set to None for not decay the learning rate
     LR_GAMMA = 0.8                                # Multiplier used for decreasing the LR
@@ -152,7 +154,7 @@ def load_parameters():
     EPOCH_PER_EST_WORD = 10
     #BATCH_SIZE = 2                               # Size of each minibatch
     #to use on real data
-    BATCH_SIZE = 5
+    BATCH_SIZE = 50
 
     HOMOGENEOUS_BATCHES = False                   # Use batches with homogeneous output lengths (Dangerous!!)
     JOINT_BATCHES = 4                             # When using homogeneous batches, get this number of batches to sort
@@ -163,15 +165,15 @@ def load_parameters():
 
     # Early stop parameters
     EARLY_STOP = True                             # Turns on/off the early stop protocol
-    PATIENCE = 5                                 # We'll stop if the val STOP_METRIC does not improve after this
+    PATIENCE = 10                                 # We'll stop if the val STOP_METRIC does not improve after this
                                                   # number of evaluations
 
     # was used for NMT
-    STOP_METRIC = 'pearson'                        # Metric for the stop
+    STOP_METRIC = 'f1_prod'                        # Metric for the stop
 
     # Model parameters
     # Perictor+Estimator
-    MODEL_TYPE = 'EncDoc'                 # Model to train. See model_zoo() for the supported architectures
+    MODEL_TYPE = 'EncPhraseAtt'                 # Model to train. See model_zoo() for the supported architectures
 
     # only Predictor
     #MODEL_TYPE = 'Predictor'
@@ -213,7 +215,6 @@ def load_parameters():
 
     #QE vector config
     QE_VECTOR_SIZE = 75
-    DOC_DECODER_HIDDEN_SIZE = 50
 
     # Fully-Connected layers for initializing the first RNN state
     #       Here we should only specify the activation function of each layer

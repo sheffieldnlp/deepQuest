@@ -39,31 +39,31 @@ The first step is to create a configuration file (see `configs/example_config-Wo
 
   | ``target_text`` -- for Predictor, Predictor training can be stopped after 2-3 epochs as soon as the quality in BLEU will stop improving
   | ``word_qe`` -- for word-level quality Estimator
+  | ``phrase_qe`` -- for phrase-level quality Estimator
   | ``sent_qe`` -- for sentence-level quality Estimator
   | ``doc_qe`` -- for doc-level models
 
 
 2. ``LOSS`` -- defines the loss function
 
-  | ``categorical_crossentropy`` for Predictor (POSTECH architecture), or word-level QE
-  | ``mse`` for sentence-level and document-level QE (regression optimization)
+  | ``categorical_crossentropy`` for Predictor (POSTECH architecture)
+  | ``mse`` for QE models
 
 
 3. ``MODEL_TYPE`` -- defines the type of the model to train 
 
-  | POSTECH: Predictor, Estimator{Word, Sent, Doc, DocAtt}
-  | BiRNN: Enc{Word, Sent, Doc, DocAtt}
+  | POSTECH: Predictor, Estimator{Word, Phrase, Sent, Doc, DocAtt}
+  | BiRNN: Enc{Word, PhraseAtt, Sent, Doc, DocAtt}
   | 
-  | **Note**: document-level models take the last BiRNN states to produce the QE labels, while the document-level models with a Attention mechanism (DocAtt) take the sum of the BiRNN states, weighted by attention (see *model_zoo.py* for implementation details).
-
+  | **Note**: document-level models take the last BiRNN states to produce the QE labels, while the document-level models with an Attention mechanism (DocAtt) take the sum of the BiRNN states, weighted by attention (see *model_zoo.py* for implementation details). EncPhraseAtt takes into account attended parts of source while estimating MT phrase quality (useful in the absence of phrase alignments).
 
 4. Parameters per model type:
 
-  | ``WORD_QE_CLASSES`` -- constantly set to 5, except for OK and BAD labels , since we have a set of standard labels related to padding and other pre-processing
+  | ``WORD_QE_CLASSES``, ``PHRASE_QE_CLASSES`` -- constantly set to 5, except for OK and BAD labels , since we have a set of standard labels related to padding and other pre-processing
   | ``SAMPLE_WEIGHTS`` -- to specify a dictionary using task names above, labels and their weights (for non-regression tasks, like word-level QE)
   | ``PRED_SCORE`` -- set as the extension of the tag file, (*e.g. ``PRED_SCORE`` = 'bleu'*), for both sentence and document-level QE, while for word-level QE, sets as 'tags' extension
-  | ``DOC_SIZE`` -- *(for document-level QE only)* to fix the size of a document (*e.g.* to the maximum length of the most frequent quartile)
-  | ``DOC_ACTIVATION`` -- *(for document-level QE only)* set as 'relu' function if scores between (0, +infinity), as a 'sigmoid' function for scores similar to metrics such ash BLEU or HTER (*i.e.* between 0 and 1), or as a linear' function for scores between (-Infinity, +infinity).
+  | ``SECOND_DIM_SIZE`` -- *(for phrase- and document-level QE only)* to fix the size of a document (*e.g.* to the maximum length of the most frequent quartile)
+  | ``OUT_ACTIVATION`` -- set as 'relu' function if predicted scores are in (0, +infinity), as a 'sigmoid' function for scores in (0,1) (for example, BLEU or HTER), or as a linear' function for scores in (-infinity, +infinity).
 
 
 5. ``MULTI_TASK`` -- Multi-Tasks Learning (MTL) (POSTECH model only)
@@ -107,6 +107,7 @@ The first step is to create a configuration file (see `configs/example_config-Wo
   | ``BATCH_SIZE`` -- typically 50 or 70 for smaller models; set to 5 for doc QE
   | ``MAX_EPOCH`` -- max epochs the code will run (for MTL max quantity of iterations over all the three tasks)
   | ``MAX_IN(OUT)PUT_TEXT_LEN`` -- longer sequences are cut to the specified length
+  | ``MAX_SRC(TRG)_INPUT_TEXT_LEN`` -- longer sequences are cut to the specified length; set this length separately if different for source and MT inputs (for example, for phrase-level QE, when source sentences and MT phrases are given as inputs)
   | ``RELOAD`` = {epoch_number}, combined with ``RELOAD_EPOCH`` = True -- helpful when you want to continue training from a certain epoch, also a good idea to specify the vocabulary as previously pickeled (``PRED_VOCAB``)
   | ``OPTIMIZER`` = {optimizer}, also adjust the learning rate accordingly ``LR``
   | ``EARLY_STOP`` = True  -- activate early stopping with required ``PATIENCE`` = e.g. 5; set the right stop metric e.g. ``STOP_METRIC`` = e.g. 'pearson' (for regression QE tasks: alo 'mae', 'rmse'; for classification tasks: 'precision', 'recall', 'f1') 
@@ -161,7 +162,7 @@ Make sure to put train, dev and test files in one folder, e.g., 'quest/examples/
  
   cd deepQuest/quest
   cp ../configs/train-test-sentQEbRNN.sh .  
-  ./train-test-sentQEbRNN.sh --task qe-2016 --source src --target mt --score hter --device cuda0 &
+  ./train-test-sentQEbRNN.sh --task qe-2016 --source src --target mt --score hter --activation sigmoid --device cuda0 &
 
 The corresponding log is in quest/log-qe-2016_srcmt_EncSent.txt
 
@@ -179,7 +180,7 @@ Assuming the Europarl training (train.{en,de}) and test data (test.{en,de}) are 
 
   cd deepQuest/quest
   cp ../configs/train-test-sentQEPostech.sh .  
-  ./train-test-sentQEPostech.sh --pred-task europarl-en-de --pred-source en --pred-target de --est-task qe-2016 --est-source src --est-target mt --score hter --device cuda0 &
+  ./train-test-sentQEPostech.sh --pred-task europarl-en-de --pred-source en --pred-target de --est-task qe-2016 --est-source src --est-target mt --score hter --activation sigmoid --device cuda0 &
 
 The corresponding logs are in quest/log-europarl-en-de_ende_Predictor.txt and quest/log-qe-2016_srcmt_EstimatorSent.txt
 The best model and test scores are stored as for BiRNN.

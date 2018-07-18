@@ -2,7 +2,7 @@
 
 echo "Analysing input parameters"
 
-PARSED_OPTIONS=$(getopt -n "$0"  -o h --long "help,task:,target:,source:,score:,device:"  -- "$@")
+PARSED_OPTIONS=$(getopt -n "$0"  -o h --long "help,task:,target:,source:,score:,activation:,device:"  -- "$@")
  
 if [ $# -eq 0 ];
 then
@@ -23,6 +23,7 @@ do
     --source extension of the source language file \n \
     --target extension of the machine-translated file \n \
     --score extension of the file with predicted scores \n \
+    --activation classification layer activation function set to ‘relu’ if predicted scores in (0, +infinity), ‘sigmoid’ -- (0, 1), or 'linear’ -- (-Infinity, +infinity) \n \
     --device cuda device "
       shift
       exit 0;;
@@ -55,6 +56,14 @@ do
         score=$2
       fi
       shift 2;;
+    
+   --activation)
+      if [ -n "$2" ];
+      then
+        out_activation=$2
+      fi
+      shift 2;;
+
   
    --device)
       if [ -n "$2" ];
@@ -80,7 +89,7 @@ rm -rf config.*
 ln -s ../configs/$conf ./config.py
 
 echo "Traning the model "${model_name}
-THEANO_FLAGS=device=$device python main.py TASK_NAME=$task_name DATASET_NAME=$task_name DATA_ROOT_PATH=examples/${task_name} SRC_LAN=${src} TRG_LAN=${trg} PRED_SCORE=$score MODEL_TYPE=$model_type NEW_EVAL_ON_SETS=val PATIENCE=$patience SAVE_EACH_EVALUATION=True > log-${model_name}-prep.txt 2>&1
+THEANO_FLAGS=device=$device python main.py TASK_NAME=$task_name DATASET_NAME=$task_name DATA_ROOT_PATH=examples/${task_name} SRC_LAN=${src} TRG_LAN=${trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation MODEL_TYPE=$model_type NEW_EVAL_ON_SETS=val PATIENCE=$patience SAVE_EACH_EVALUATION=True > log-${model_name}-prep.txt 2>&1
 
 awk '/^$/ {nlstack=nlstack "\n";next;} {printf "%s",nlstack; nlstack=""; print;}' log-${model_name}-prep.txt > log-${model_name}.txt
 
@@ -94,7 +103,7 @@ pred_weights=trained_models/${model_name}/epoch_${best_epoch}_weights.h5
 
 echo "Scoring test."${trg}
 
-THEANO_FLAGS=device=$device python main.py TASK_NAME=$task_name DATASET_NAME=$task_name DATA_ROOT_PATH=examples/${task_name} SRC_LAN=${src} TRG_LAN=${trg} PRED_SCORE=$score MODEL_TYPE=$model_type PRED_VOCAB=$pred_vocab PRED_WEIGHTS=$pred_weights MODE=sampling NEW_EVAL_ON_SETS=test PATIENCE=$patience SAVE_EACH_EVALUATION=True >> log-${model_name}.txt 2>&1
+THEANO_FLAGS=device=$device python main.py TASK_NAME=$task_name DATASET_NAME=$task_name DATA_ROOT_PATH=examples/${task_name} SRC_LAN=${src} TRG_LAN=${trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation MODEL_TYPE=$model_type PRED_VOCAB=$pred_vocab PRED_WEIGHTS=$pred_weights MODE=sampling NEW_EVAL_ON_SETS=test PATIENCE=$patience SAVE_EACH_EVALUATION=True >> log-${model_name}.txt 2>&1
 
 mv trained_models/${model_name}/test_epoch_0_output_0.pred trained_models/${model_name}/test_epoch_${best_epoch}_output_0.pred
 

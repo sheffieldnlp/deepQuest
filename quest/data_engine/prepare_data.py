@@ -168,10 +168,9 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
         base_path = params['DATA_ROOT_PATH']
         name = params['DATASET_NAME'] + '_' + params['SRC_LAN'] + params['TRG_LAN']
         doc_size = 0
-        if 'DOC_SIZE' in params:
-            doc_size=params['DOC_SIZE']
-        ds = Dataset(name, base_path, silence=silence, vocabulary=vocabulary, vocabulary_len=vocabulary_len, doc_size=doc_size)
-
+        if 'SECOND_DIM_SIZE' in params:
+	    doc_size=params['SECOND_DIM_SIZE']
+	ds = Dataset(name, base_path, silence=silence, vocabulary=vocabulary, vocabulary_len=vocabulary_len, doc_size=doc_size)
         # OUTPUT DATA
         # Let's load the train, val and test splits of the target language sentences (outputs)
         #    the files include a sentence per line.
@@ -225,7 +224,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                          min_occ=params.get('MIN_OCCURRENCES_OUTPUT_VOCAB', 0),
                          bpe_codes=params.get('BPE_CODES_PATH', None))
 
-        elif params['MODEL_TYPE'] == 'EstimatorWord' or params['MODEL_TYPE'] == 'EncWord' or params['MODEL_TYPE'] == 'EncWordAtt':
+        elif params['MODEL_TYPE'] == 'EstimatorWord' or params['MODEL_TYPE'] == 'EncWord' or params['MODEL_TYPE'] == 'EncWordAtt' or params['MODEL_TYPE'] == 'EncPhraseAtt' or params['MODEL_TYPE'] == 'EstimatorPhrase':
 
             ds.setOutput(base_path + '/' + params['TEXT_FILES']['train'] + params['PRED_SCORE'],
                          'train',
@@ -277,7 +276,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                                  max_words=params.get('OUTPUT_VOCABULARY_SIZE', 0),
                                  bpe_codes=params.get('BPE_CODES_PATH', None))
 
-                elif params['MODEL_TYPE'] == 'EstimatorWord' or params['MODEL_TYPE'] == 'EncWord' or params['MODEL_TYPE'] == 'EncWordAtt':
+                elif params['MODEL_TYPE'] == 'EstimatorWord' or params['MODEL_TYPE'] == 'EncWord' or params['MODEL_TYPE'] == 'EncWordAtt' or params['MODEL_TYPE'] == 'EncPhraseAtt' or params['MODEL_TYPE'] == 'EstimatorPhrase':
 
                     ds.setOutput(base_path + '/' + params['TEXT_FILES'][split] + params['PRED_SCORE'],
                                  split,
@@ -300,10 +299,26 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
         # INPUT DATA
         # We must ensure that the 'train' split is the first (for building the vocabulary)
 
-        data_type = 'text'
+    	max_src_in_len=params.get('MAX_SRC_INPUT_TEXT_LEN', None)
+        if max_src_in_len == None:
+            params['MAX_SRC_INPUT_TEXT_LEN'] = params['MAX_INPUT_TEXT_LEN']
+        	
+        max_trg_in_len=params.get('MAX_TRG_INPUT_TEXT_LEN', None)
+        if max_trg_in_len == None:
+            params['MAX_TRG_INPUT_TEXT_LEN'] = params['MAX_INPUT_TEXT_LEN']
+    
+        data_type_src = 'text'
+        data_type_trg = 'text'
 
         if 'EstimatorDoc' in params['MODEL_TYPE'] or 'EncDoc' in params['MODEL_TYPE']:
-            data_type = 'doc'
+            data_type_src = 'doc'
+            data_type_trg = 'doc'
+       
+
+        # here we set to doc meaning just the 3d input
+        if params['MODEL_TYPE'] == 'EstimatorPhrase' or params['MODEL_TYPE'] == 'EncPhraseAtt':
+            data_type_trg = 'doc'
+
 
 
         ext = params['TRG_LAN']
@@ -322,13 +337,13 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
 
                     ds.setInput(base_path + '/' + params['TEXT_FILES'][split] + params['SRC_LAN'],
                             split,
-                            type=data_type,
+                            type=data_type_src,
                             id=params['INPUTS_IDS_DATASET'][0],
                             pad_on_batch=params.get('PAD_ON_BATCH', True),
                             tokenization=params.get('TOKENIZATION_METHOD', 'tokenize_none'),
                             build_vocabulary=params['INPUTS_IDS_DATASET'][0],
                             fill=params.get('FILL', 'end'),
-                            max_text_len=params.get('MAX_INPUT_TEXT_LEN', 70),
+                            max_text_len=params.get('MAX_SRC_INPUT_TEXT_LEN', 70),
                             max_words=params.get('INPUT_VOCABULARY_SIZE', 0),
                             min_occ=params.get('MIN_OCCURRENCES_INPUT_VOCAB', 0),
                             bpe_codes=params.get('BPE_CODES_PATH', None))
@@ -336,13 +351,13 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
 
                     ds.setInput(base_path + '/' + params['TEXT_FILES'][split] + params['SRC_LAN'],
                             split,
-                            type=data_type,
+                            type=data_type_src,
                             id=params['INPUTS_IDS_DATASET'][0],
                             pad_on_batch=params.get('PAD_ON_BATCH', True),
                             tokenization=params.get('TOKENIZATION_METHOD', 'tokenize_none'),
                             build_vocabulary=build_vocabulary,
                             fill=params.get('FILL', 'end'),
-                            max_text_len=params.get('MAX_INPUT_TEXT_LEN', 70),
+                            max_text_len=params.get('MAX_SRC_INPUT_TEXT_LEN', 70),
                             max_words=params.get('INPUT_VOCABULARY_SIZE', 0),
                             min_occ=params.get('MIN_OCCURRENCES_INPUT_VOCAB', 0),
                             bpe_codes=params.get('BPE_CODES_PATH', None))
@@ -352,7 +367,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
 
                         ds.setInput(base_path + '/' + params['TEXT_FILES'][split] + ext,
                                     split,
-                                    type=data_type,
+                                    type=data_type_trg,
                                     id=params['INPUTS_IDS_DATASET'][1],
                                     required=False,
                                     tokenization=params.get('TOKENIZATION_METHOD', 'tokenize_none'),
@@ -360,7 +375,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                                     build_vocabulary=build_vocabulary,
                                     offset=0,
                                     fill=params.get('FILL', 'end'),
-                                    max_text_len=params.get('MAX_OUTPUT_TEXT_LEN', 70),
+                                    max_text_len=params.get('MAX_TRG_INPUT_TEXT_LEN', 3),
                                     max_words=params.get('OUTPUT_VOCABULARY_SIZE', 0),
                                     bpe_codes=params.get('BPE_CODES_PATH', None))
 
@@ -374,7 +389,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
 
                         ds.setInput(base_path + '/' + params['TEXT_FILES'][split] + ext,
                                     split,
-                                    type=data_type,
+                                    type=data_type_trg,
                                     id=params['INPUTS_IDS_DATASET'][1],
                                     required=False,
                                     tokenization=params.get('TOKENIZATION_METHOD', 'tokenize_none'),
@@ -382,7 +397,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                                     build_vocabulary=target_dict,
                                     offset=0,
                                     fill=params.get('FILL', 'end'),
-                                    max_text_len=params.get('MAX_OUTPUT_TEXT_LEN', 70),
+                                    max_text_len=params.get('MAX_TRG_INPUT_TEXT_LEN', 3),
                                     max_words=params.get('OUTPUT_VOCABULARY_SIZE', 0),
                                     bpe_codes=params.get('BPE_CODES_PATH', None))
 
@@ -392,7 +407,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
 
                         ds.setInput(base_path + '/' + params['TEXT_FILES'][split] + ext,
                                     split,
-                                    type=data_type,
+                                    type=data_type_trg,
                                     id=params['INPUTS_IDS_DATASET'][1],
                                     required=False,
                                     tokenization=params.get('TOKENIZATION_METHOD', 'tokenize_none'),
@@ -400,13 +415,13 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                                     build_vocabulary=build_vocabulary,
                                     offset=1,
                                     fill=params.get('FILL', 'end'),
-                                    max_text_len=params.get('MAX_OUTPUT_TEXT_LEN', 70),
+                                    max_text_len=params.get('MAX_TRG_INPUT_TEXT_LEN', 3),
                                     max_words=params.get('OUTPUT_VOCABULARY_SIZE', 0),
                                     bpe_codes=params.get('BPE_CODES_PATH', None))
 
                         ds.setInput(base_path + '/' + params['TEXT_FILES'][split] + ext,
                                     split,
-                                    type=data_type,
+                                    type=data_type_trg,
                                     id=params['INPUTS_IDS_DATASET'][2],
                                     required=False,
                                     tokenization=params.get('TOKENIZATION_METHOD', 'tokenize_none'),
@@ -414,13 +429,13 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                                     build_vocabulary=target_dict,
                                     offset=-1,
                                     fill=params.get('FILL', 'end'),
-                                    max_text_len=params.get('MAX_OUTPUT_TEXT_LEN', 70),
+                                    max_text_len=params.get('MAX_TRG_INPUT_TEXT_LEN', 3),
                                     max_words=params.get('OUTPUT_VOCABULARY_SIZE', 0),
                                     bpe_codes=params.get('BPE_CODES_PATH', None))
 
                         ds.setInput(base_path + '/' + params['TEXT_FILES'][split] + ext,
                                     split,
-                                    type=data_type,
+                                    type=data_type_trg,
                                     id=params['INPUTS_IDS_DATASET'][3],
                                     required=False,
                                     tokenization=params.get('TOKENIZATION_METHOD', 'tokenize_none'),
@@ -428,7 +443,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                                     build_vocabulary=target_dict,
                                     offset=0,
                                     fill=params.get('FILL', 'end'),
-                                    max_text_len=params.get('MAX_OUTPUT_TEXT_LEN', 70),
+                                    max_text_len=params.get('MAX_TRG_INPUT_TEXT_LEN', 3),
                                     max_words=params.get('OUTPUT_VOCABULARY_SIZE', 0),
                                     bpe_codes=params.get('BPE_CODES_PATH', None))
 
@@ -442,7 +457,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
 
                         ds.setInput(base_path + '/' + params['TEXT_FILES'][split] + ext,
                                     split,
-                                    type=data_type,
+                                    type=data_type_trg,
                                     id=params['INPUTS_IDS_DATASET'][1],
                                     required=False,
                                     tokenization=params.get('TOKENIZATION_METHOD', 'tokenize_none'),
@@ -450,13 +465,13 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                                     build_vocabulary=target_dict,
                                     offset=1,
                                     fill=params.get('FILL', 'end'),
-                                    max_text_len=params.get('MAX_OUTPUT_TEXT_LEN', 70),
+                                    max_text_len=params.get('MAX_TRG_INPUT_TEXT_LEN', 3),
                                     max_words=params.get('OUTPUT_VOCABULARY_SIZE', 0),
                                     bpe_codes=params.get('BPE_CODES_PATH', None))
 
                         ds.setInput(base_path + '/' + params['TEXT_FILES'][split] + ext,
                                     split,
-                                    type=data_type,
+                                    type=data_type_trg,
                                     id=params['INPUTS_IDS_DATASET'][2],
                                     required=False,
                                     tokenization=params.get('TOKENIZATION_METHOD', 'tokenize_none'),
@@ -464,13 +479,13 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                                     build_vocabulary=target_dict,
                                     offset=-1,
                                     fill=params.get('FILL', 'end'),
-                                    max_text_len=params.get('MAX_OUTPUT_TEXT_LEN', 70),
+                                    max_text_len=params.get('MAX_TRG_INPUT_TEXT_LEN', 3),
                                     max_words=params.get('OUTPUT_VOCABULARY_SIZE', 0),
                                     bpe_codes=params.get('BPE_CODES_PATH', None))
 
                         ds.setInput(base_path + '/' + params['TEXT_FILES'][split] + ext,
                                     split,
-                                    type=data_type,
+                                    type=data_type_trg,
                                     id=params['INPUTS_IDS_DATASET'][3],
                                     required=False,
                                     tokenization=params.get('TOKENIZATION_METHOD', 'tokenize_none'),
@@ -478,7 +493,7 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                                     build_vocabulary=target_dict,
                                     offset=0,
                                     fill=params.get('FILL', 'end'),
-                                    max_text_len=params.get('MAX_OUTPUT_TEXT_LEN', 70),
+                                    max_text_len=params.get('MAX_TRG_INPUT_TEXT_LEN', 3),
                                     max_words=params.get('OUTPUT_VOCABULARY_SIZE', 0),
                                     bpe_codes=params.get('BPE_CODES_PATH', None))
 

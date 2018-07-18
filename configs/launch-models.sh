@@ -33,8 +33,8 @@ for score in ${scores[@]} ;do
 
 model_name=${task_name}_${model_type}_${score}_${doc_activation}
 # for encoder models do not parametrize PRED_WEIGHTS
-echo THEANO_FLAGS=device=$device python main.py TASK_NAME=$task_name DATASET_NAME=$task_name DATA_ROOT_PATH=examples/${task_name} SRC_LAN=${src} TRG_LAN=${trg} PRED_SCORE=$score MODEL_TYPE=$model_type MODEL_NAME=${model_name} STORE_PATH=doc_models/${model_name} DOC_SIZE=$doc_size PRED_VOCAB=$pred_vocab PRED_WEIGHTS=$pred_weights DOC_ACTIVATION=${doc_activation} EPOCHS_FOR_SAVE=${epochs_for_save} SAVE_EACH_EVALUATION=False
+echo THEANO_FLAGS=device=$device python main.py TASK_NAME=$task_name DATASET_NAME=$task_name DATA_ROOT_PATH=examples/${task_name} SRC_LAN=${src} TRG_LAN=${trg} PRED_SCORE=$score MODEL_TYPE=$model_type MODEL_NAME=${model_name} STORE_PATH=doc_models/${model_name} SECOND_DIM_SIZE=$doc_size PRED_VOCAB=$pred_vocab PRED_WEIGHTS=$pred_weights OUT_ACTIVATION=${doc_activation} EPOCHS_FOR_SAVE=${epochs_for_save} SAVE_EACH_EVALUATION=False
 
-THEANO_FLAGS=device=$device python main.py TASK_NAME=$task_name DATASET_NAME=$task_name DATA_ROOT_PATH=examples/${task_name} SRC_LAN=${src} TRG_LAN=${trg} PRED_SCORE=$score MODEL_TYPE=$model_type MODEL_NAME=${model_name} STORE_PATH=doc_models/${model_name} DOC_SIZE=$doc_size PRED_VOCAB=$pred_vocab PRED_WEIGHTS=$pred_weights DOC_ACTIVATION=${doc_activation} EPOCHS_FOR_SAVE=${epochs_for_save} SAVE_EACH_EVALUATION=False > log-${model_name}.txt 2>&1
+THEANO_FLAGS=device=$device python main.py TASK_NAME=$task_name DATASET_NAME=$task_name DATA_ROOT_PATH=examples/${task_name} SRC_LAN=${src} TRG_LAN=${trg} PRED_SCORE=$score MODEL_TYPE=$model_type MODEL_NAME=${model_name} STORE_PATH=doc_models/${model_name} SECOND_DIM_SIZE=$doc_size PRED_VOCAB=$pred_vocab PRED_WEIGHTS=$pred_weights OUT_ACTIVATION=${doc_activation} EPOCHS_FOR_SAVE=${epochs_for_save} SAVE_EACH_EVALUATION=False > log-${model_name}.txt 2>&1
 done
 done
