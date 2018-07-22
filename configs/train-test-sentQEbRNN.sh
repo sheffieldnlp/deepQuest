@@ -6,7 +6,7 @@ PARSED_OPTIONS=$(getopt -n "$0"  -o h --long "help,task:,target:,source:,score:,
  
 if [ $# -eq 0 ];
 then
-  echo 'No argumants provided. Use --help option for more details.'
+  echo 'No arguments provided. Use --help option for more details.'
   exit 1
 fi
  
@@ -83,13 +83,14 @@ done
 conf=config-sentQEbRNN.py
 model_type=EncSent
 model_name=${task_name}_${src}${trg}_${model_type}
+store_path=trained_models/${model_name}/
 patience=10
 
 rm -rf config.*
 ln -s ../configs/$conf ./config.py
 
 echo "Traning the model "${model_name}
-THEANO_FLAGS=device=$device python main.py TASK_NAME=$task_name DATASET_NAME=$task_name DATA_ROOT_PATH=examples/${task_name} SRC_LAN=${src} TRG_LAN=${trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation MODEL_TYPE=$model_type NEW_EVAL_ON_SETS=val PATIENCE=$patience SAVE_EACH_EVALUATION=True > log-${model_name}-prep.txt 2>&1
+THEANO_FLAGS=device=$device python main.py TASK_NAME=$task_name DATASET_NAME=$task_name DATA_ROOT_PATH=examples/${task_name} SRC_LAN=${src} TRG_LAN=${trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation MODEL_TYPE=$model_type MODEL_NAME=$model_name STORE_PATH=$store_path NEW_EVAL_ON_SETS=val PATIENCE=$patience SAVE_EACH_EVALUATION=True > log-${model_name}-prep.txt 2>&1
 
 awk '/^$/ {nlstack=nlstack "\n";next;} {printf "%s",nlstack; nlstack=""; print;}' log-${model_name}-prep.txt > log-${model_name}.txt
 
@@ -103,9 +104,11 @@ pred_weights=trained_models/${model_name}/epoch_${best_epoch}_weights.h5
 
 echo "Scoring test."${trg}
 
-THEANO_FLAGS=device=$device python main.py TASK_NAME=$task_name DATASET_NAME=$task_name DATA_ROOT_PATH=examples/${task_name} SRC_LAN=${src} TRG_LAN=${trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation MODEL_TYPE=$model_type PRED_VOCAB=$pred_vocab PRED_WEIGHTS=$pred_weights MODE=sampling NEW_EVAL_ON_SETS=test PATIENCE=$patience SAVE_EACH_EVALUATION=True >> log-${model_name}.txt 2>&1
+THEANO_FLAGS=device=$device python main.py TASK_NAME=$task_name DATASET_NAME=$task_name DATA_ROOT_PATH=examples/${task_name} SRC_LAN=${src} TRG_LAN=${trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation MODEL_TYPE=$model_type MODEL_NAME=$model_name STORE_PATH=$store_path PRED_VOCAB=$pred_vocab PRED_WEIGHTS=$pred_weights MODE=sampling NEW_EVAL_ON_SETS=test PATIENCE=$patience SAVE_EACH_EVALUATION=True >> log-${model_name}.txt 2>&1
 
 mv trained_models/${model_name}/test_epoch_0_output_0.pred trained_models/${model_name}/test_epoch_${best_epoch}_output_0.pred
 
 echo "Model output in trained_models/"${model_name}"/test_epoch_"${best_epoch}"_output_0.pred"
+echo "Evaluations results"
+tail -6 log-${model_name}.txt | head -4
 
