@@ -152,9 +152,15 @@ Examples
 We also provide two scripts to train and test Sentence QE models for biRNN and POSTECH (`configs/train-test-sentQEbRNN.sh`_ and `configs/train-test-sentQEPostech.sh`_ respectively). Assuming that correct environment is already activated and all the environmental variables are set:
 
 1. Copy the necessary BiRNN shell script to the 'quest' folder.
-2. Sentence QE data in the format compatible for deepQuest could be downloaded, for example, from the `WMT QE Shared task 2016`_ page. 
 
-Make sure to put train, dev and test files in one folder, e.g., 'quest/examples/qe-2016' ('examples' folder is used for data storage).
+2. Sentence QE data in the format compatible for deepQuest could be downloaded, for example, from the `WMT QE Shared task 2017`_
+ page. Download `task1_en-de_training-dev.tar.gz`_, `task1_en-de_test.tar.gz`_ and `wmt17_en-de_gold.tar.gz`_. Make sure to get original version of the data and not the latest version they were replaced with. Create the folder examples/qe-2017 in the quest directory and unarchive all the three archives into the folder. Execute the following commands to rename the 2017 test data:
+
+.. code:: bash
+  
+  cd examples/qe-2017
+  rename 's/^test.2017/test/' *
+  mv en-de_task1_test.2017.hter test.hter
 
 3. Launch the script from the 'quest' folder. Specify the name of the folder, extensions of the source and machine-translated files, as well the cuda device (specify 'cpu' to train on cpus):
 
@@ -162,32 +168,109 @@ Make sure to put train, dev and test files in one folder, e.g., 'quest/examples/
  
   cd deepQuest/quest
   cp ../configs/train-test-sentQEbRNN.sh .  
-  ./train-test-sentQEbRNN.sh --task qe-2016 --source src --target mt --score hter --activation sigmoid --device cuda0 &
+  ./train-test-sentQEbRNN.sh --task qe-2017 --source src --target mt --score hter --activation sigmoid --device cuda0 > log-sentQEbRNN-qe-2017.txt 2>&1 &
 
-The corresponding log is in quest/log-qe-2016_srcmt_EncSent.txt
+The complete log is in quest/log-qe-2016_srcmt_EncSent.txt.
+The log log-sentQEbRNN-qe-2017.txt should show comparable Pearson values to the following ones:
 
-The script will output the information on the number of the best epoch, e.g. 18.
-The best model weights are in trained_models/qe-2016_srcmt_EncSent/epoch_18_weights.h5
-The resulting test scores are in trained_models/qe-2016_srcmt_EncSent/test_epoch_18_output_0.pred
+
+.. code:: bash
+   
+  cat log-sentQEbRNN-qe-2017.txt
+  Analysing input parameters
+  Traning the model qe-2017_srcmt_EncSent
+  Best model weights are dumped into saved_models/qe-2017_srcmt_EncSent/epoch_12_weights.h5
+  Scoring test.mt
+  Model output in trained_models/qe-2017_srcmt_EncSent/test_epoch_12_output_0.pred
+  Evaluations results
+  [24/07/2018 12:08:33] **SentQE**
+  [24/07/2018 12:08:33] Pearson 0.3871
+  [24/07/2018 12:08:33] MAE 0.1380
+  [24/07/2018 12:08:33] RMSE 0.1819
 
 **Note** If you try to launch the scripts with your data and you do not have gold-standard labels for your test data cf. the respective note in the `Scoring`_ section.
 
 For POSTECH Predictor pre-training, parallel data containing human reference translations should be prepared. For example, the `Europarl`_ corpus can be used. The data can be pre-proccesed in a standard `Moses`_ pipeline (Corpus Preparation section). Typically, around 2M of parallel lines are used for training and 3K lines for testing (small Predictor model).
 
-Assuming the Europarl training (train.{en,de}) and test data (test.{en,de}) are in 'quest/examples/europarl-en-de', launch the train-test-sentQEPostech.sh script:
+We provide the following example of the preprocessing procedure:
+
+1. Create the respective data directory and download the EN-DE Europarl data:
+
+.. code:: bash
+  
+  mkdir -p europarl/raw && cd "$_"
+  wget http://opus.nlpl.eu/download.php?f=Europarl/de-en.txt.zip
+  unzip download.php\?f=Europarl%2Fde-en.txt.zip
+
+2. Create your copy of the Moses toolkit:
+ 
+.. code:: bash
+   
+  git clone https://github.com/moses-smt/mosesdecoder.git
+
+3. Copy the preprocessing scripts provided with the deepQuest tool to your main data directory and launch the preprocessing scripts by specifying the data info and the Moses clone location. This step may take a while. 
+  
+.. code:: bash
+
+  cd /{your_path}/europarl
+  cp deepQuest/configs/preprocess-data-predictor.sh ./
+  cp deepQuest/configs/split.py ./
+  ./preprocess-data-predictor.sh --name Europarl.de-en --source en --target de --dir /{your_path}/europarl --mosesdir /{your_path}/mosesdecoder
+
+The final preprocessed data should look as looks:
+
+.. code:: bash
+
+  wc -l clean/en-de/*
+  
+  3000 clean/en-de/dev.de
+  3000 clean/en-de/dev.en
+  3000 clean/en-de/test.de
+  3000 clean/en-de/test.en
+  1862790 clean/en-de/train.de
+  1862790 clean/en-de/train.en
+  3737580 total
+
+
+4. Copy the prepared data files into the quest data directory:
+
+.. code:: bash
+  
+  mkdir /{your_path}/quest/examples/europarl-en-de
+  cp /{your_path}/europarl/clean/en-de/* /{your_path}/quest/examples/europarl-en-de
+
+5. Launch the Postech script:
 
 .. code:: bash
 
   cd deepQuest/quest
   cp ../configs/train-test-sentQEPostech.sh .  
-  ./train-test-sentQEPostech.sh --pred-task europarl-en-de --pred-source en --pred-target de --est-task qe-2016 --est-source src --est-target mt --score hter --activation sigmoid --device cuda0 &
+  ./train-test-sentQEPostech.sh --pred-task europarl-en-de --pred-source en --pred-target de --est-task qe-2017 --est-source src --est-target mt --score hter --activation sigmoid --device cuda0 > log-sentQEPostech-qe-2017.txt 2>&1 &
 
-The corresponding logs are in quest/log-europarl-en-de_ende_Predictor.txt and quest/log-qe-2016_srcmt_EstimatorSent.txt
-The best model and test scores are stored as for BiRNN.
+Complete logs are in quest/log-europarl-en-de_ende_Predictor.txt and quest/log-qe-2016_srcmt_EstimatorSent.txt
+The log log-sentQEPostech-qe-2017.txt should show comparable Pearson values to the following ones:
+
+.. code:: bash
+  
+  cat log-sentQEPostech-qe-2017.txt
+  Analysing input parameters
+  Traning the model europarl-en-de_ende_Predictor
+  Traning the model qe-2017_srcmt_EstimatorSent
+  Best model weights are dumped into saved_models/qe-2017_srcmt_EstimatorSent/epoch_2_weights.h5
+  Scoring test.mt
+  Model output in trained_models/qe-2017_srcmt_EstimatorSent/test_epoch_2_output_0.pred
+  Evaluations results
+  [24/07/2018 10:52:50] Pearson 0.5102
+  [24/07/2018 10:52:50] MAE 0.1261
+  [24/07/2018 10:52:50] RMSE 0.1640
+  [24/07/2018 10:52:50] Done evaluating on metric qe_metrics
 
 .. _`Europarl`: http://opus.nlpl.eu/Europarl.php
-.. _`WMT QE Shared task 2016`: http://www.statmt.org/wmt16/quality-estimation-task.html
+.. _`WMT QE Shared task 2017`: http://www.statmt.org/wmt17/quality-estimation-task.html
 .. _`configs/train-test-sentQEbRNN.sh`: https://github.com/sheffieldnlp/deepQuest/blob/master/configs/train-test-sentQEbRNN.sh
 .. _`configs/train-test-sentQEPostech.sh`: https://github.com/sheffieldnlp/deepQuest/blob/master/configs/train-test-sentQEPostech.sh
 .. _`Moses`: http://www.statmt.org/moses/?n=Moses.Baseline
+.. _`task1_en-de_training-dev.tar.gz`: https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-1974
+.. _`task1_en-de_test.tar.gz`: https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-2135
+.. _`wmt17_en-de_gold.tar.gz`: http://www.quest.dcs.shef.ac.uk/wmt17_files_qe/wmt17_en-de_gold.tar.gz
 

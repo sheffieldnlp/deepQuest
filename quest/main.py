@@ -12,7 +12,7 @@ from utils.utils import update_parameters
 import glob
 import sys
 import os
-
+from numpy.random import seed
 
 logging.basicConfig(level=logging.DEBUG, format='[%(asctime)s] %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
 logger = logging.getLogger(__name__)
@@ -220,19 +220,25 @@ def apply_NMT_model(params, load_dataset=None):
     #    dataset = loadDataset(load_dataset)
     #params['INPUT_VOCABULARY_SIZE'] = dataset.vocabulary_len[params['INPUTS_IDS_DATASET'][0]]
     #params['OUTPUT_VOCABULARY_SIZE'] = dataset.vocabulary_len[params['OUTPUTS_IDS_DATASET'][0]]
-    vocab_y = dataset.vocabulary[params['INPUTS_IDS_DATASET'][1]]['idx2words']
-
+    #vocab_y = dataset.vocabulary[params['INPUTS_IDS_DATASET'][1]]['idx2words']
+    params['INPUT_VOCABULARY_SIZE'] = dataset.vocabulary_len[params['INPUTS_IDS_DATASET'][0]]
+    params['OUTPUT_VOCABULARY_SIZE'] = dataset.vocabulary_len['target_text']
+    
     # Load model
     #nmt_model = loadModel(params['STORE_PATH'], params['RELOAD'], reload_epoch=params['RELOAD_EPOCH'])
     nmt_model = TranslationModel(params,
                                      model_type=params['MODEL_TYPE'],
                                      verbose=params['VERBOSE'],
                                      model_name=params['MODEL_NAME'],
+                                     set_optimizer=False,
                                      vocabularies=dataset.vocabulary,
                                      store_path=params['STORE_PATH'],
-                                     set_optimizer=False,
-                                     trainable_pred=False, trainable_est=False,
-                                     weights_path=parameters.get('PRED_WEIGHTS', None))
+                                     trainable_pred=True, trainable_est=True,
+                                     weights_path=None)
+    nmt_model = updateModel(nmt_model, params['STORE_PATH'], params['RELOAD'], reload_epoch=params['RELOAD_EPOCH'])
+    nmt_model.setParams(params)
+    nmt_model.setOptimizer()
+
     
     inputMapping = dict()
     for i, id_in in enumerate(params['INPUTS_IDS_DATASET']):
@@ -259,11 +265,15 @@ def apply_NMT_model(params, load_dataset=None):
                       'tokenize_hypotheses': params['TOKENIZE_HYPOTHESES'],
                       'tokenize_references': params['TOKENIZE_REFERENCES']}
         #vocab = dataset.vocabulary[params['OUTPUTS_IDS_DATASET'][0]]['idx2words']
-        vocab = dataset.vocabulary[params['INPUTS_IDS_DATASET'][1]]['idx2words']
+        #vocab = dataset.vocabulary[params['INPUTS_IDS_DATASET'][1]]['idx2words']
         extra_vars[s] = dict()
         extra_vars[s]['references'] = dataset.extra_variables[s][params['OUTPUTS_IDS_DATASET'][0]]
-        input_text_id = None
-        vocab_src = None
+        #input_text_id = None
+        #vocab_src = None
+        input_text_id = params['INPUTS_IDS_DATASET'][0]
+        vocab_x = dataset.vocabulary[input_text_id]['idx2words']
+        vocab_y = dataset.vocabulary[params['INPUTS_IDS_DATASET'][1]]['idx2words']
+        
         if params['BEAM_SEARCH']:
             extra_vars['beam_size'] = params.get('BEAM_SIZE', 6)
             extra_vars['state_below_index'] = params.get('BEAM_SEARCH_COND_INPUT', -1)
@@ -305,8 +315,8 @@ def apply_NMT_model(params, load_dataset=None):
                                                                          is_text=True,
                                                                          input_text_id=input_text_id,
                                                                          save_path=nmt_model.model_path,
-                                                                         index2word_y=vocab,
-                                                                         index2word_x=vocab_src,
+                                                                         index2word_y=vocab_y,
+                                                                         index2word_x=vocab_x,
                                                                          sampling_type=params['SAMPLING'],
                                                                          beam_search=params['BEAM_SEARCH'],
                                                                          start_eval_on_epoch=params[
@@ -474,6 +484,10 @@ if __name__ == "__main__":
         exit(2)
 
     check_params(parameters)
+
+    rnd_seed = parameters.get('RND_SEED', None)
+    if rnd_seed != None:
+        seed(rnd_seed)
     
     new_eval_sets=parameters.get('NEW_EVAL_ON_SETS', None)
     if new_eval_sets != None:

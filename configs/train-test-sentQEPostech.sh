@@ -105,6 +105,8 @@ pred_conf=config-Predictor-small.py
 pred_model_type=Predictor
 pred_model_name=${pred_task_name}_${pred_src}${pred_trg}_${pred_model_type}
 pred_store_path=trained_models/${pred_model_name}/
+# random seed for reproducibility
+rnd_seed=8
 
 rm -rf config.*
 ln -s ../configs/$pred_conf ./config.py
@@ -127,22 +129,24 @@ rm -rf config.*
 ln -s ../configs/$est_conf ./config.py
 
 echo "Traning the model "${est_model_name}
-THEANO_FLAGS=device=$device python main.py TASK_NAME=$est_task_name DATASET_NAME=$est_task_name DATA_ROOT_PATH=examples/${est_task_name} SRC_LAN=${est_src} TRG_LAN=${est_trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation PRED_VOCAB=$pred_vocab PRED_WEIGHTS=$pred_weights MODEL_TYPE=$est_model_type MODEL_NAME=$est_model_name STORE_PATH=$est_store_path NEW_EVAL_ON_SETS=val PATIENCE=$patience SAVE_EACH_EVALUATION=True > log-${est_model_name}-prep.txt 2>&1
+THEANO_FLAGS=device=$device python main.py TASK_NAME=$est_task_name DATASET_NAME=$est_task_name DATA_ROOT_PATH=examples/${est_task_name} SRC_LAN=${est_src} TRG_LAN=${est_trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation PRED_VOCAB=$pred_vocab PRED_WEIGHTS=$pred_weights MODEL_TYPE=$est_model_type MODEL_NAME=$est_model_name STORE_PATH=$est_store_path NEW_EVAL_ON_SETS=val PATIENCE=$patience SAVE_EACH_EVALUATION=True RND_SEED=$rnd_seed > log-${est_model_name}-prep.txt 2>&1
 
 awk '/^$/ {nlstack=nlstack "\n";next;} {printf "%s",nlstack; nlstack=""; print;}' log-${est_model_name}-prep.txt > log-${est_model_name}.txt
 
 best_epoch=$(tail -1 log-${est_model_name}.txt | tr ":" "\n" | tr ' ' '\n' | tail -3 | head -1)
-echo 'Best model weights are dumped into 'trained_models/${est_model_name}/epoch_${best_epoch}_weights.h5
 
 # pre-trained Weights + Vocab to use for scoring
-est_vocab=datasets/Dataset_${est_task_name}_${est_src}${est_trg}.pkl
-est_weights=trained_models/${est_model_name}/epoch_${best_epoch}_weights.h5
+est_weights=saved_models/${est_model_name}/epoch_${best_epoch}_weights.h5
+
+mkdir -p saved_models/${est_model_name}
+
+cp trained_models/${est_model_name}/epoch_${best_epoch}_weights.h5 saved_models/${est_model_name}
+
+echo 'Best model weights are dumped into 'saved_models/${est_model_name}/epoch_${best_epoch}_weights.h5
 
 echo "Scoring test."${est_trg}
 
-THEANO_FLAGS=device=$device python main.py TASK_NAME=$est_task_name DATASET_NAME=$est_task_name DATA_ROOT_PATH=examples/${est_task_name} SRC_LAN=${est_src} TRG_LAN=${est_trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation MODEL_TYPE=$est_model_type MODEL_NAME=$est_model_name STORE_PATH=$est_store_path PRED_VOCAB=$est_vocab PRED_WEIGHTS=$est_weights MODE=sampling NEW_EVAL_ON_SETS=test PATIENCE=$patience SAVE_EACH_EVALUATION=True >> log-${est_model_name}.txt 2>&1
-
-mv trained_models/${est_model_name}/test_epoch_0_output_0.pred trained_models/${est_model_name}/test_epoch_${best_epoch}_output_0.pred
+THEANO_FLAGS=device=$device python main.py TASK_NAME=$est_task_name DATASET_NAME=$est_task_name DATA_ROOT_PATH=examples/${est_task_name} SRC_LAN=${est_src} TRG_LAN=${est_trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation MODEL_TYPE=$est_model_type MODEL_NAME=$est_model_name STORE_PATH=$est_store_path PRED_VOCAB=$pred_vocab RELOAD=$best_epoch MODE=sampling NEW_EVAL_ON_SETS=test PATIENCE=$patience SAVE_EACH_EVALUATION=True RND_SEED=$rnd_seed >> log-${est_model_name}.txt 2>&1
 
 echo "Model output in trained_models/"${est_model_name}"/test_epoch_"${best_epoch}"_output_0.pred"
 echo "Evaluations results"
