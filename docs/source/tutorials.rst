@@ -255,14 +255,14 @@ The log log-sentQEPostech-qe-2017.txt should show results comparable to the foll
    Analysing input parameters
    Traning the model europarl-en-de_ende_Predictor
    Traning the model qe-2017_srcmt_EstimatorSent
-   Best model weights are dumped into saved_models/qe-2017_srcmt_EstimatorSent/epoch_2_weights.h5
+   Best model weights are dumped into saved_models/qe-2017_srcmt_EstimatorSent/epoch_3_weights.h5
    Scoring test.mt
-   Model output in trained_models/qe-2017_srcmt_EstimatorSent/test_epoch_2_output_0.pred
+   Model output in trained_models/qe-2017_srcmt_EstimatorSent/test_epoch_3_output_0.pred
    Evaluations results
-   [24/07/2018 10:52:50] Pearson 0.5102
-   [24/07/2018 10:52:50] MAE 0.1261
-   [24/07/2018 10:52:50] RMSE 0.1640
-   [24/07/2018 10:52:50] Done evaluating on metric qe_metrics
+   [30/07/2018 14:24:51] Pearson 0.5276
+   [30/07/2018 14:24:51] MAE 0.1279
+   [30/07/2018 14:24:51] RMSE 0.1649
+   [30/07/2018 14:24:51] Done evaluating on metric qe_metrics
 
 .. _`Europarl`: http://opus.nlpl.eu/Europarl.php
 .. _`WMT QE Shared task 2017`: http://www.statmt.org/wmt17/quality-estimation-task.html
