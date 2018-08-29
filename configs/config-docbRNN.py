@@ -38,7 +38,7 @@ def load_parameters():
     EVAL_EACH_EPOCHS = True                       # Select whether evaluate between N epochs or N updates
     EVAL_EACH = 1                                 # Sets the evaluation frequency (epochs or updates)
 
-    PRED_VOCAB = 'vocabs-coling/Dataset_predictor-en-es-euro-newscom-small_enes.pkl'
+    #PRED_VOCAB = 'vocabs-coling/Dataset_predictor-en-es-euro-newscom-small_enes.pkl'
     MULTI_TASK = False
 
     # Search parameters
