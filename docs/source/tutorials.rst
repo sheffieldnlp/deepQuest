@@ -12,7 +12,7 @@ In its current version, DeepQuest provides the following, multi-level, QE models
   - **BiRNN**: simple architecture relying on two bi-directional RNNs, designed by `Ive et al., 2018`_. 
 
 .. _Kim et al., 2017: https://dl.acm.org/citation.cfm?id=3109480
-.. _Ive et al., 2018: 
+.. _Ive et al., 2018: http://aclweb.org/anthology/C18-1266 
 
 Depending on the desired level of prediction, the configuration will differ, and this section aims to give a detailed description of the customised parameters.
 
