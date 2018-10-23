@@ -4,7 +4,7 @@ Developed at the [University of Sheffield][1], DeepQuest provides state-of-the-a
 
 If you use this, please cite:
 
-<b>DeepQuest: a framework for neural-based Quality Estimation</b>. [Julia Ive][2], [Frédéric Blain][3], [Lucia Specia][4] (2018).
+<b>[DeepQuest: a framework for neural-based Quality Estimation][7]</b>. [Julia Ive][2], [Frédéric Blain][3], [Lucia Specia][4] (2018).
 
     @article{ive2018deepquest,
       title={DeepQuest: a framework for neural-based Quality Estimation},
@@ -30,3 +30,4 @@ The development of DeepQuest received funding from the [European Association for
 [4]: http://www.dcs.shef.ac.uk/~lucia/
 [5]: http://eamt.org/
 [6]: https://ara.amazon-ml.com/
+[7]: http://aclweb.org/anthology/C18-1266
