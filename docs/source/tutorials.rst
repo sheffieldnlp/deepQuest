@@ -135,14 +135,8 @@ New test sets with already trained models can be scored by launching the same co
   | ``PRED_VOCAB`` -- set the path to the vocabulary of the pre-trained model (as dumped to the datasets/Dataset_{task_name}_{src_extension}{trg_extension}.pkl folder)
   | ``PRED_WEIGHTS`` -- set the path to the pre-trained weights (as dumped to the trained_models/{model_name} folder) of the model that would be used for scoring
   | ``MODE`` -- set to 'sampling'
+  | ``NO_REF`` -- set to 'True' if you do not have a file with gold-standard labels
  
-**Note** that the scoring procedure requires a file with gold-standard labels. Create a dummy file with, for example, zero scores if you do not have gold-standard labels. Assuming your machine-translated file is test.mt and you want to generate dummy HTER scores:
-
- .. code:: bash 
-
-   for i in `seq $(wc -l test.mt | cut -d ' ' -f 1)`; do echo "0.0000"; done > test.hter
-
-
 .. _`WMT QE Shared task`: http://www.statmt.org/wmt18/quality-estimation-task.html
 .. _configs/config-sentQEbRNNEval.py: https://github.com/sheffieldnlp/deepQuest/blob/master/configs/config-sentQEbRNNEval.py
 
