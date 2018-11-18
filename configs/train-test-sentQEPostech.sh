@@ -146,7 +146,7 @@ echo 'Best model weights are dumped into 'saved_models/${est_model_name}/epoch_$
 
 echo "Scoring test."${est_trg}
 
-THEANO_FLAGS=device=$device python main.py TASK_NAME=$est_task_name DATASET_NAME=$est_task_name DATA_ROOT_PATH=examples/${est_task_name} SRC_LAN=${est_src} TRG_LAN=${est_trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation MODEL_TYPE=$est_model_type MODEL_NAME=$est_model_name STORE_PATH=$est_store_path PRED_VOCAB=$pred_vocab RELOAD=$best_epoch MODE=sampling NEW_EVAL_ON_SETS=test PATIENCE=$patience SAVE_EACH_EVALUATION=True RND_SEED=$rnd_seed >> log-${est_model_name}.txt 2>&1
+THEANO_FLAGS=device=$device python main.py TASK_NAME=$est_task_name DATASET_NAME=$est_task_name DATA_ROOT_PATH=examples/${est_task_name} SRC_LAN=${est_src} TRG_LAN=${est_trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation MODEL_TYPE=$est_model_type MODEL_NAME=$est_model_name STORE_PATH=$est_store_path PRED_VOCAB=$pred_vocab RELOAD=$best_epoch MODE=sampling NEW_EVAL_ON_SETS=test PATIENCE=$patience SAVE_EACH_EVALUATION=True RND_SEED=$rnd_seed NO_REF=True >> log-${est_model_name}.txt 2>&1
 
 echo "Model output in trained_models/"${est_model_name}"/test_epoch_"${best_epoch}"_output_0.pred"
 echo "Evaluations results"

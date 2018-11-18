@@ -1,6 +1,6 @@
 import json
 import logging
-
+import numpy as np
 from localization_utilities import *
 
 
@@ -120,7 +120,7 @@ def eval_vqa(pred_list, verbose, extra_vars, split):
             'number accuracy': acc_number,
             'other accuracy': acc_other}
 
-def qe_metrics(pred_list, verbose, extra_vars, split, ds, set):
+def qe_metrics(pred_list, verbose, extra_vars, split, ds, set, no_ref=False):
     """
     Multiclass classification metrics. see multilabel ranking metrics in sklearn library for more info:
         http://scikit-learn.org/stable/modules/model_evaluation.html#multilabel-ranking-metrics
@@ -142,8 +142,19 @@ def qe_metrics(pred_list, verbose, extra_vars, split, ds, set):
         final_scores = get_coco_score(pred_list[0], verbose, extra_vars, split)
 
     elif set=='sent_qe':
-        ref = eval("ds.Y_"+split+"['sent_qe']")
-        final_scores = eval_sent_qe(ref, pred_list[0], 'Sent')
+        
+        sent_pred=[]
+     
+        if len(pred_list[0]) > 1:
+            sent_pred = pred_list[0]
+        else:
+            sent_pred = pred_list
+
+        if no_ref:
+            final_scores = eval_sent_qe([], sent_pred, 'Sent')
+        else:
+            ref = eval("ds.Y_"+split+"['sent_qe']")
+            final_scores = eval_sent_qe(ref, sent_pred, 'Sent')
 
     elif set=='doc_qe':
         
@@ -176,7 +187,7 @@ def qe_metrics(pred_list, verbose, extra_vars, split, ds, set):
 
     return final_scores
 
-def eval_word_qe(gt_list, pred_list, vocab):
+def eval_word_qe(gt_list, pred_list, vocab, qe_type):
     
     from sklearn.metrics import precision_recall_fscore_support
     import numpy as np
@@ -223,7 +234,7 @@ def eval_word_qe(gt_list, pred_list, vocab):
 
         res_list[p] = y_pred
 
-        logging.info('**Word QE**')
+        logging.info('**'+qe_type+'QE**')
         logging.info('Threshold %.4f' % p)
         logging.info('Precision %s' % precision)
         logging.info('Recall %s' % recall)
@@ -352,21 +363,23 @@ def eval_sent_qe(gt_list, pred_list, qe_type):
         pred_fin.extend(pred_batch.flatten())
     logging.info('**Predicted scores**')
     logging.info(pred_fin)
+    if len(gt_list) > 0:
+        mse = mean_squared_error(gt_list, pred_fin)
+        rmse = np.sqrt(mse)
+        mae = mean_absolute_error(gt_list, pred_fin)
+        pear_corr = np.corrcoef(gt_list, pred_fin)[0, 1]
 
-    mse = mean_squared_error(gt_list, pred_fin)
-    rmse = np.sqrt(mse)
-    mae = mean_absolute_error(gt_list, pred_fin)
-    pear_corr = np.corrcoef(gt_list, pred_fin)[0, 1]
+        logging.info('**'+qe_type+'QE**')
+        logging.info('Pearson %.4f' % pear_corr)
+        logging.info('MAE %.4f' % mae)
+        logging.info('RMSE %.4f' % rmse)
 
-    logging.info('**'+qe_type+'QE**')
-    logging.info('Pearson %.4f' % pear_corr)
-    logging.info('MAE %.4f' % mae)
-    logging.info('RMSE %.4f' % rmse)
-
-    return {'pearson': pear_corr,
+        return {'pearson': pear_corr,
             'mae': mae,
             'rmse': rmse,
             'pred': pred_fin}
+    else:
+        return {'pred': pred_fin}
 
 
 def multilabel_metrics(pred_list, verbose, extra_vars, split):

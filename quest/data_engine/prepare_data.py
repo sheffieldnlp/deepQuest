@@ -247,7 +247,11 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                             type='file-name',
                             id='raw_' + params['OUTPUTS_IDS_DATASET'][0])
 
-        for split in ['val', 'test']:
+        val_test_list = params.get('EVAL_ON_SETS', ['val'])
+        no_ref = params.get('NO_REF', False)
+        if no_ref:
+            val_test_list = []
+        for split in val_test_list:
             if params['TEXT_FILES'].get(split) is not None:
 
                 if params['MODEL_TYPE'] == 'Predictor':
@@ -508,7 +512,8 @@ def build_dataset(params, vocabulary=dict(), vocabulary_len=dict()):
                 ds.loadMapping(params['MAPPING'])
 
         # If we had multiple references per sentence
-        keep_n_captions(ds, repeat=1, n=1, set_names=params['EVAL_ON_SETS'])
+        if not params.get('NO_REF', False):
+            keep_n_captions(ds, repeat=1, n=1, set_names=params['EVAL_ON_SETS'])
 
         # We have finished loading the dataset, now we can store it for using it in the future
         saveDataset(ds, params['DATASET_STORE_PATH'])

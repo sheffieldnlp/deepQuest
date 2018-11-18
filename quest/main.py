@@ -267,7 +267,8 @@ def apply_NMT_model(params, load_dataset=None):
         #vocab = dataset.vocabulary[params['OUTPUTS_IDS_DATASET'][0]]['idx2words']
         #vocab = dataset.vocabulary[params['INPUTS_IDS_DATASET'][1]]['idx2words']
         extra_vars[s] = dict()
-        extra_vars[s]['references'] = dataset.extra_variables[s][params['OUTPUTS_IDS_DATASET'][0]]
+        if not params.get('NO_REF', False): 
+            extra_vars[s]['references'] = dataset.extra_variables[s][params['OUTPUTS_IDS_DATASET'][0]]
         #input_text_id = None
         #vocab_src = None
         input_text_id = params['INPUTS_IDS_DATASET'][0]
@@ -325,7 +326,8 @@ def apply_NMT_model(params, load_dataset=None):
                                                                          write_type=params['SAMPLING_SAVE_MODE'],
                                                                          eval_on_epochs=params['EVAL_EACH_EPOCHS'],
                                                                          save_each_evaluation=False,
-                                                                         verbose=params['VERBOSE'])
+                                                                         verbose=params['VERBOSE'],
+                                                                         no_ref=params['NO_REF'])
 
         callback_metric.evaluate(params['RELOAD'], counter_name='epoch' if params['EVAL_EACH_EPOCHS'] else 'update')
 
@@ -411,7 +413,8 @@ def buildCallbacks(params, model, dataset):
                                                                              eval_on_epochs=params['EVAL_EACH_EPOCHS'],
                                                                              save_each_evaluation=params[
                                                                                  'SAVE_EACH_EVALUATION'],
-                                                                             verbose=params['VERBOSE'])
+                                                                             verbose=params['VERBOSE'],
+                                                                             no_ref=params['NO_REF'])
 
             callbacks.append(callback_metric)
 
@@ -483,12 +486,14 @@ if __name__ == "__main__":
         print 'Error processing arguments: (', k, ",", v, ")"
         exit(2)
 
-    check_params(parameters)
+    #check_params(parameters)
 
     rnd_seed = parameters.get('RND_SEED', None)
     if rnd_seed != None:
         seed(rnd_seed)
     
+    
+    check_params(parameters)
     new_eval_sets=parameters.get('NEW_EVAL_ON_SETS', None)
     if new_eval_sets != None:
         set_ar = parameters['NEW_EVAL_ON_SETS'].split(',')

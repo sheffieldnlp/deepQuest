@@ -88,7 +88,8 @@ class EvalPerformance(KerasCallback):
                  out_pred_idx=None,
                  max_plot=1.0,
                  do_plot=True,
-                 verbose=1):
+                 verbose=1,
+                 no_ref=False):
         """
         Evaluates a model each N epochs or updates
 
@@ -129,6 +130,7 @@ class EvalPerformance(KerasCallback):
         :param max_plot: maximum value shown on the performance plots generated
         :param verbose: verbosity level; by default 1
         :param do_plot: plot results so far
+        :param no_ref: in case when testing on unlabeled test set 
 
 
         Deprecated outputs
@@ -194,6 +196,7 @@ class EvalPerformance(KerasCallback):
         self.save_each_evaluation = save_each_evaluation
         self.written_header = False
         self.do_plot = do_plot
+        self.no_ref = no_ref
         create_dir_if_not_exists(self.save_path)
 
         # Single-output model
@@ -300,6 +303,7 @@ class EvalPerformance(KerasCallback):
 
                 predictions = predictions_all[gt_pos]
                 trans_pred = predictions[0]
+              
                 # if self.verbose > 0:
                 #     print('')
                 #     logging.info('Prediction output ' + str(gt_pos) + ': ' + gt_id + ' ('+type+')')
@@ -406,12 +410,12 @@ class EvalPerformance(KerasCallback):
                         logging.info("WARNING: evaluation results on 'train' split might be incorrect when"
                                      "applying random image shuffling.")
 
-                    # Evaluate on the chosen metric
+                    # Evaluate on the chosen metric  
                     metrics = evaluation.select[metric](
-                        pred_list=predictions,
-                        verbose=self.verbose,
-                        extra_vars=self.extra_vars[gt_pos],
-                        split=s, ds = self.ds, set=self.gt_id[0])
+                         pred_list=predictions,
+                         verbose=self.verbose,
+                         extra_vars=self.extra_vars[gt_pos],
+                         split=s, ds = self.ds, set=self.gt_id[0], no_ref=self.no_ref)
 
                     # Print results to file and store in model log
                     with open(filepath, 'a') as f:

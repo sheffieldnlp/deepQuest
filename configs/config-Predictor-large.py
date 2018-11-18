@@ -30,6 +30,7 @@ def load_parameters():
     #KERAS_METRICS = ['pearson_corr', 'mae', 'rmse']
     EVAL_ON_SETS = ['val']                        # Possible values: 'train', 'val' and 'test' (external evaluator)
     #EVAL_ON_SETS_KERAS = ['val']                       #  Possible values: 'train', 'val' and 'test' (Keras' evaluator). Untested.
+    NO_REF = False
     EVAL_ON_SETS_KERAS = []
     START_EVAL_ON_EPOCH = 1                      # First epoch to start the model evaluation
     EVAL_EACH_EPOCHS = True                       # Select whether evaluate between N epochs or N updates

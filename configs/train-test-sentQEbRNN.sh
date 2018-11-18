@@ -110,7 +110,7 @@ echo 'Best model weights are dumped into 'saved_models/${model_name}/epoch_${bes
 
 echo "Scoring test."${trg}
 
-THEANO_FLAGS=device=$device python main.py TASK_NAME=$task_name DATASET_NAME=$task_name DATA_ROOT_PATH=examples/${task_name} SRC_LAN=${src} TRG_LAN=${trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation MODEL_TYPE=$model_type MODEL_NAME=$model_name STORE_PATH=$store_path PRED_VOCAB=$pred_vocab RELOAD=$best_epoch MODE=sampling NEW_EVAL_ON_SETS=test PATIENCE=$patience SAVE_EACH_EVALUATION=True RND_SEED=$rnd_seed >> log-${model_name}.txt 2>&1
+THEANO_FLAGS=device=$device python main.py TASK_NAME=$task_name DATASET_NAME=$task_name DATA_ROOT_PATH=examples/${task_name} SRC_LAN=${src} TRG_LAN=${trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation MODEL_TYPE=$model_type MODEL_NAME=$model_name STORE_PATH=$store_path PRED_VOCAB=$pred_vocab RELOAD=$best_epoch MODE=sampling NEW_EVAL_ON_SETS=test PATIENCE=$patience SAVE_EACH_EVALUATION=True RND_SEED=$rnd_seed NO_REF=True >> log-${model_name}.txt 2>&1
 
 echo "Model output in trained_models/"${model_name}"/test_epoch_"${best_epoch}"_output_0.pred"
 echo "Evaluations results"
