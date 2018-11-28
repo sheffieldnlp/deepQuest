@@ -13,7 +13,7 @@ import threading
 from collections import Counter
 from operator import add
 import time
-
+import codecs
 import numpy as np
 from PIL import Image as pilimage
 from scipy import misc
@@ -1314,7 +1314,7 @@ class Dataset(object):
         """
         sentences = []
         if isinstance(annotations_list, str) and os.path.isfile(annotations_list):
-            with open(annotations_list, 'r') as list_:
+            with codecs.open(annotations_list, 'r', 'utf-8') as list_:
                 for line in list_:
                     sentences.append(line.rstrip('\n'))
         elif isinstance(annotations_list, list):
