@@ -27,7 +27,7 @@ The development of DeepQuest received funding from the [European Association for
 [1]: https://www.sheffield.ac.uk
 [2]: https://github.com/julia-ive
 [3]: https://fredblain.org/
-[4]: http://www.dcs.shef.ac.uk/~lucia/
+[4]: https://www.imperial.ac.uk/people/l.specia
 [5]: http://eamt.org/
 [6]: https://ara.amazon-ml.com/
 [7]: http://aclweb.org/anthology/C18-1266
