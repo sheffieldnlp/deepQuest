@@ -40,9 +40,9 @@ class Ter:
             gts_ter += gts[i][0] + '\t(sentence%d)\n' % i
             res_ter += res[i][0] + '\t(sentence%d)\n' % i
             with open(self.ref_filename, 'w') as f:
-                f.write(gts_ter)
+                f.write(gts_ter.encode('utf-8'))
             with open(self.hyp_filename, 'w') as f:
-                f.write(res_ter)
+                f.write(res_ter.encode('utf-8'))
         if warn:
             print "Warning! Multi-reference TER unimplemented!"
         self.ter_p = subprocess.Popen(self.ter_cmd, cwd=os.path.dirname(os.path.abspath(__file__)),
