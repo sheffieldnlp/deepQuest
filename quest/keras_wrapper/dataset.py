@@ -413,7 +413,7 @@ class Dataset(object):
         #################################################
 
         # Parameters for managing all the inputs and outputs
-        # List of identifiers for the inputs and outputs and their respective types 
+        # List of identifiers for the inputs and outputs and their respective types
         # (which will define the preprocessing applied)
         self.ids_inputs = []
         self.types_inputs = []  # see accepted types in self.__accepted_types_inputs
@@ -732,7 +732,7 @@ class Dataset(object):
             data = self.preprocessDoc(path_list, id, set_name, tokenization, build_vocabulary, max_text_len,
                                        max_words, offset, fill, min_occ, pad_on_batch, words_so_far,
                                        bpe_codes=bpe_codes, separator=separator)
-                     
+
         elif type == 'image-features':
             data = self.preprocessFeatures(path_list, id, set_name, feat_len)
         elif type == 'video-features':
@@ -756,12 +756,15 @@ class Dataset(object):
         self.__setInput(data, set_name, type, id, overwrite_split, add_additional)
 
     def __setInput(self, set, set_name, type, id, overwrite_split, add_additional):
+        #print("type set of __setInput:", len(set), "id", id) #Shu
         if add_additional:
             exec ('self.X_' + set_name + '[id] += set')
         else:
             exec ('self.X_' + set_name + '[id] = set')
         exec ('self.loaded_' + set_name + '[0] = True')
+        #print("optional inputs", self.optional_inputs) #Shu
         if id not in self.optional_inputs:
+            #print("Not optional inputs", id) #Shu
             exec ('self.len_' + set_name + ' = len(self.X_' + set_name + '[id])')
             if not overwrite_split and not add_additional:
                 self.__checkLengthSet(set_name)
@@ -1120,12 +1123,18 @@ class Dataset(object):
         :return: Preprocessed features
         """
         # file with a list, each line being a path to a .npy file with a feature vector
+        #print("Shu test of visual features", path_list) #Shu
         if isinstance(path_list, str) and os.path.isfile(path_list):
             data = []
-            with open(path_list, 'r') as list_:
-                for line in list_:
-                    # data.append(np.fromstring(line.rstrip('\n'), sep=','))
-                    data.append(line.rstrip('\n'))
+            if id == "visual_feature":
+                import pandas as pd
+                data_csv = pd.read_csv(path_list, header=None, sep=" ")
+                data = data_csv.values.tolist()
+            else:
+                with open(path_list, 'r') as list_:
+                    for line in list_:
+                        # data.append(np.fromstring(line.rstrip('\n'), sep=','))
+                        data.append(line.rstrip('\n'))
         elif isinstance(path_list, list):
             data = path_list
         else:
@@ -1137,7 +1146,7 @@ class Dataset(object):
         if not isinstance(feat_len, list):
             feat_len = [feat_len]
         self.features_lengths[id] = feat_len
-
+        #print("Feature length", len(data[0])) # Shu add
         return data
 
     def loadFeatures(self, X, feat_len, normalization_type='L2', normalization=False, loaded=False, external=False,
@@ -1155,18 +1164,27 @@ class Dataset(object):
 
         :return: Loaded features as numpy array
         """
+        #print("test Shu load features (visual features)", "normalisation", normalization, "data_aug", data_augmentation) #Shu
+        #print("X in loadFeatures", type(X)) #Shu
+        #print("length example of X visual feature", len(X[0])) #Shu
         if normalization and normalization_type not in self.__available_norm_feat:
             raise NotImplementedError(
                 'The chosen normalization type ' + normalization_type + ' is not implemented for the type "image-features" and "video-features".')
 
         n_batch = len(X)
-        features = np.zeros(tuple([n_batch] + feat_len))
+        #print("n_batch", n_batch) #Shu
+        features = np.zeros(tuple([n_batch] + feat_len)) # row: n_batch; column: feat_len
 
         for i, feat in enumerate(X):
-            if not external:
-                feat = self.path + '/' + feat
+            if isinstance(feat, list):
+                #print("feat0 printed", feat[0]) #Shu
+                feat = np.asarray(feat)
 
-            feat = np.load(feat)
+            else:
+                if not external:
+                    feat = self.path + '/' + feat
+
+                feat = np.load(feat)
 
             if data_augmentation:
                 noise_mean = 0.0
@@ -1210,6 +1228,7 @@ class Dataset(object):
 
         :return: Preprocessed sentences.
         """
+        #print("Preprocessing doc Shu, path:", annotations_list) #Shu
         sentences = []
         sentences2d = []
         if isinstance(annotations_list, str) and os.path.isfile(annotations_list):
@@ -2796,11 +2815,11 @@ class Dataset(object):
     def setTrainMean(self, mean_image, id, normalization=False):
         """
             Loads a pre-calculated training mean image, 'mean_image' can either be:
-            
+
             - numpy.array (complete image)
             - list with a value per channel
             - string with the path to the stored image.
-            
+
             :param id: identifier of the type of input whose train mean is being introduced.
         """
         if isinstance(mean_image, str):
@@ -2890,7 +2909,7 @@ class Dataset(object):
                    external=False, loaded=False):
         """
             Loads a set of images from disk.
-            
+
             :param images : list of image string names or list of matrices representing images (only if loaded==True)
             :param id : identifier in the Dataset object of the data we are loading
             :param normalization_type: type of normalization applied
@@ -3083,25 +3102,25 @@ class Dataset(object):
              meanSubstraction=True, dataAugmentation=True, debug=False):
         """
             Gets all the data samples stored between the positions init to final
-            
+
             :param set_name: 'train', 'val' or 'test' set
             :param init: initial position in the corresponding set split. Must be bigger or equal than 0 and smaller than final.
             :param final: final position in the corresponding set split.
             :param debug: if True all data will be returned without preprocessing
-            
-            
+
+
             # 'raw-image', 'video', 'image-features' and 'video-features'-related parameters
-            
+
             :param normalization: indicates if we want to normalize the data.
-            
-            
+
+
             # 'image-features' and 'video-features'-related parameters
-            
+
             :param normalization_type: indicates the type of normalization applied. See available types in self.__available_norm_im_vid for 'raw-image' and 'video' and self.__available_norm_feat for 'image-features' and 'video-features'.
-            
-            
+
+
             # 'raw-image' and 'video'-related parameters
-            
+
             :param meanSubstraction: indicates if we want to substract the training mean from the returned images (only applicable if normalization=True)
             :param dataAugmentation: indicates if we want to apply data augmentation to the loaded images (random flip and cropping)
 
@@ -3168,6 +3187,7 @@ class Dataset(object):
                     x = x_fin
 
                 elif type_in == 'image-features':
+                    #print("Correctly asked the image-features with getX") #Shu
                     x = self.loadFeatures(x, self.features_lengths[id_in], normalization_type, normalization,
                                           data_augmentation=dataAugmentation)
                 elif type_in == 'video-features':
@@ -3182,25 +3202,25 @@ class Dataset(object):
               dataAugmentation=True, debug=False):
         """
             Gets the [X,Y] pairs for the next 'k' samples in the desired set.
-            
+
             :param set_name: 'train', 'val' or 'test' set
             :param k: number of consecutive samples retrieved from the corresponding set.
             :param sorted_batches: If True, it will pick data of the same size
             :param debug: if True all data will be returned without preprocessing
-            
-            
+
+
             # 'raw-image', 'video', 'image-features' and 'video-features'-related parameters
-            
+
             :param normalization: indicates if we want to normalize the data.
-            
-            
+
+
             # 'image-features' and 'video-features'-related parameters
-            
+
             :param normalization_type: indicates the type of normalization applied. See available types in self.__available_norm_im_vid for 'image' and 'video' and self.__available_norm_feat for 'image-features' and 'video-features'.
-            
-            
+
+
             # 'raw-image' and 'video'-related parameters
-            
+
             :param meanSubstraction: indicates if we want to substract the training mean from the returned images (only applicable if normalization=True)
             :param dataAugmentation: indicates if we want to apply data augmentation to the loaded images (random flip and cropping)
 
@@ -3270,6 +3290,7 @@ class Dataset(object):
                     x = x_fin
 
                 elif type_in == 'image-features':
+                    #print("Correctly asked for the image-features of getXY SHU") #Shu
                     x = self.loadFeatures(x, self.features_lengths[id_in], normalization_type, normalization,
                                           data_augmentation=dataAugmentation)
                 elif type_in == 'video-features':
@@ -3540,6 +3561,7 @@ class Dataset(object):
         # Recover input samples
         X = []
         for id_in, type_in in zip(self.ids_inputs, self.types_inputs):
+            #print("getX_FromIndices id_in", id_in, "type_in", type_in) #Shu
             ghost_x = False
             if id_in in self.optional_inputs:
                 try:
@@ -3671,7 +3693,7 @@ class Dataset(object):
 
     # ------------------------------------------------------- #
     #       AUXILIARY FUNCTIONS
-    #           
+    #
     # ------------------------------------------------------- #
 
 
@@ -3733,17 +3755,19 @@ class Dataset(object):
     def __checkLengthSet(self, set_name):
         """
         Check that the length of the inputs and outputs match. Only checked if the input is not optional.
-        :param set_name: 
+        :param set_name:
         :return:
         """
         if eval('self.loaded_' + set_name + '[0] and self.loaded_' + set_name + '[1]'):
             lengths = []
             plot_ids_in = []
             for id_in in self.ids_inputs:
+                #print("id_in", id_in, set_name) #Shu
                 if id_in not in self.optional_inputs:
                     plot_ids_in.append(id_in)
                     exec ('lengths.append(len(self.X_' + set_name + '[id_in]))')
             for id_out in self.ids_outputs:
+                #print("id_out", id_out, set_name) #Shu
                 exec ('lengths.append(len(self.Y_' + set_name + '[id_out]))')
             if lengths[1:] != lengths[:-1]:
                 raise Exception('Inputs and outputs size '

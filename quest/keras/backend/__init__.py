@@ -18,7 +18,7 @@ if not os.access(_keras_base_dir, os.W_OK):
 _keras_dir = os.path.join(_keras_base_dir, '.keras')
 
 # Default backend: Theano.
-_BACKEND = 'theano'
+_BACKEND = 'tensorflow' #'theano'
 
 # Attempt to read Keras config file.
 _config_path = os.path.expanduser(os.path.join(_keras_dir, 'keras.json'))

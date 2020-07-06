@@ -59,6 +59,11 @@ def _standardize_input_data(data, names, shapes=None,
         return []
     if data is None:
         return [None for _ in range(len(names))]
+
+    # Test Shu
+    #for key, value in data.iteritems() : #Shu
+        #print("key dict", key, "value type", type(value)) #Shu
+
     if isinstance(data, dict):
         arrays = []
         for name in names:
@@ -67,6 +72,7 @@ def _standardize_input_data(data, names, shapes=None,
                                  name + '". Need data for each key in: ' +
                                  str(names))
             arrays.append(data[name])
+            #print("_standardize_input_data length of arrays with the data", len(arrays)) #Shu
     elif isinstance(data, list):
         if len(data) != len(names):
             if data and hasattr(data[0], 'shape'):
@@ -2132,6 +2138,7 @@ class Model(Container):
                 batch_index = 0
                 while steps_done < steps_per_epoch:
                     generator_output = next(output_generator)
+                    #print("generator_output length", len(generator_output)) #Shu
 
                     if not hasattr(generator_output, '__len__'):
                         raise ValueError('Output of generator should be '

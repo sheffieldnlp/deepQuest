@@ -40,7 +40,7 @@ release = ''
 # ones.
 extensions = [
     'sphinx.ext.todo',
-    'sphinx.ext.mathjax',
+    'sphinx.ext.imgmath',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
 ]

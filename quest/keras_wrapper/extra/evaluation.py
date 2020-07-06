@@ -42,7 +42,7 @@ def get_coco_score(pred_list, verbose, extra_vars, split):
     else:
         refs = gts
 
-    # Detokenize references if needed.    
+    # Detokenize references if needed.
     if extra_vars.get('apply_detokenization', False):
         refs = {idx: map(extra_vars['detokenize_f'], refs[idx]) for idx in refs}
 
@@ -142,11 +142,11 @@ def qe_metrics(pred_list, verbose, extra_vars, split, ds, set, no_ref=False):
         final_scores = get_coco_score(pred_list[0], verbose, extra_vars, split)
 
     elif set=='sent_qe':
-        
+
         sent_pred=[]
-     
+
         if len(pred_list[0]) > 1:
-            sent_pred = pred_list[0]
+           sent_pred = pred_list[0]
         else:
             sent_pred = pred_list
 
@@ -157,9 +157,19 @@ def qe_metrics(pred_list, verbose, extra_vars, split, ds, set, no_ref=False):
             final_scores = eval_sent_qe(ref, sent_pred, 'Sent')
 
     elif set=='doc_qe':
-        
-        ref = eval("ds.Y_"+split+"['doc_qe']")        
-        final_scores = eval_sent_qe(ref, pred_list[0], 'Doc')
+
+        doc_pred=[]
+
+        if len(pred_list[0]) > 1:
+            doc_pred = pred_list[0]
+        else:
+            doc_pred = pred_list
+
+        if no_ref:
+            final_scores = eval_sent_qe([], doc_pred, 'Doc')
+        else:
+            ref = eval("ds.Y_"+split+"['doc_qe']")
+            final_scores = eval_sent_qe(ref, doc_pred, 'Doc')
 
 
     elif set=='word_qe':
@@ -192,13 +202,13 @@ def qe_metrics(pred_list, verbose, extra_vars, split, ds, set, no_ref=False):
     return final_scores
 
 def eval_word_qe(target_text, gt_list, pred_list, vocab, qe_type):
-    
+
     from sklearn.metrics import precision_recall_fscore_support
     import numpy as np
     from collections import defaultdict
     #print(len(pred_list))
     #print(pred_list)
-    
+
     precision_eval, recall_eval, f1_eval = 0.0, 0.0, 0.0
     prec_list = []
     recall_list = []
@@ -284,7 +294,7 @@ def eval_word_qe(target_text, gt_list, pred_list, vocab, qe_type):
 
 
 def eval_phrase_qe(gt_list, pred_list, vocab, qe_type):
-    
+
     from sklearn.metrics import precision_recall_fscore_support
     import numpy as np
     from collections import defaultdict
@@ -367,7 +377,7 @@ def eval_phrase_qe(gt_list, pred_list, vocab, qe_type):
 
     f1_list = np.array(f1_list)
     prec_list = np.array(prec_list)
-    recall_list = np.array(recall_list)    
+    recall_list = np.array(recall_list)
 
     max_f1 = np.argmax(f1_list)
 

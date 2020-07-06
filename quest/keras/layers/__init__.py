@@ -17,6 +17,7 @@ from .noise import *
 from .advanced_activations import *
 from .wrappers import *
 from .googlenet_custom_layers import *
+from .bert import *
 from .convolutional_recurrent import *
 #TODO: Update attention layers!
 # from .attention import *

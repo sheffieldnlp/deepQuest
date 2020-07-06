@@ -205,9 +205,9 @@ def updateModel(model, model_path, update_num, reload_epoch=True, full_path=Fals
 
     if not full_path:
         if reload_epoch:
-            model_path = model_path + "/epoch_" + iteration
+            model_path = model_path + "epoch_" + iteration
         else:
-            model_path = model_path + "/update_" + iteration
+            model_path = model_path + "update_" + iteration
 
     logging.info("<<< Updating model " + model_name + " from " + model_path + " ... >>>")
 
@@ -734,10 +734,6 @@ class Model_Wrapper(object):
         if params['verbose'] > 0:
             logging.info("<<< Training model >>>")
 
-        #print("len ds X_train", len(ds.X_train), "type ds X_train", type(ds.X_train)) # Test shu
-        # Test Shu
-        #for key, value in ds.X_train.iteritems() : #Shu
-            #print("cnn_model, X_train, key dict", key, "value type", type(value)) #Shu
         self.__train(ds, params)
 
         logging.info("<<< Finished training model >>>")
@@ -818,7 +814,7 @@ class Model_Wrapper(object):
             logging.info("<<< Finished training model >>>")
 
     def __train(self, ds, params, state=dict()):
-        print("see the content of the dataset ds", dir(ds))
+
         if params['verbose'] > 0:
             logging.info("Training parameters: " + str(params))
 
@@ -2659,7 +2655,6 @@ class Model_Wrapper(object):
 
     def _prepareSequentialData(self, X, Y=None, sample_weights=False):
 
-        #print("_prepareSequentialData, key inputsmapping", self.inputsMapping.keys()) #Shu
         # Format input data
         if len(self.inputsMapping.keys()) == 1:  # single input
             X = X[self.inputsMapping[0]]
@@ -2696,7 +2691,6 @@ class Model_Wrapper(object):
         Y_new = dict()
         Y_sample_weights = dict()
 
-        #print("_prepareModelData, key inputsmapping", self.inputsMapping.keys()) #Shu
         # Format input data
         for in_model, in_ds in self.inputsMapping.iteritems():
             X_new[in_model] = X[in_ds]

@@ -23,6 +23,10 @@ from .common import image_dim_ordering
 py_all = all
 py_sum = sum
 
+#tf.set_random_seed(24) #deprecated
+tf.compat.v1.set_random_seed(24)
+print("TensorFlow backend Shu")
+
 # INTERNAL UTILS
 
 # This is the default internal TF session used by Keras.
@@ -4129,4 +4133,3 @@ def conv_input_length(output_length, filter_size, border_mode, stride):
 
 def as_tensor_variable(x, name=None, ndim=None):
     return variable(x, name=name)
-

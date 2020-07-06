@@ -162,7 +162,7 @@ class ChannelWisePReLU(Layer):
     '''
     def __init__(self, init='zero', weights=None, channels_shared=False, axis=1, **kwargs):
         self.supports_masking = True
-        self.init = initializations.get(init)
+        self.init = initializers.get(init)#initializations.get(init) #Shu
         self.initial_weights = weights
         self.channels_shared = channels_shared
         self.axis = axis
@@ -170,8 +170,8 @@ class ChannelWisePReLU(Layer):
 
     def build(self, input_shape):
         size = input_shape[self.axis] if self.channels_shared==False else 1
-        self.alphas = self.init([size],
-                                name='{}_alphas'.format(self.name))
+        self.alphas = self.init([size])#,
+                                #name='{}_alphas'.format(self.name))
         self.trainable_weights = [self.alphas]
 
         if self.initial_weights is not None:

@@ -111,25 +111,27 @@ rnd_seed=8
 rm -rf config.*
 ln -s ../configs/$pred_conf ./config.py
 
-echo "Traning the model "${pred_model_name}
-THEANO_FLAGS=device=$device PYTHONHASHSEED=0 python main.py TASK_NAME=$pred_task_name DATASET_NAME=$pred_task_name DATA_ROOT_PATH=examples/${pred_task_name} SRC_LAN=${pred_src} TRG_LAN=${pred_trg} MODEL_TYPE=$pred_model_type MODEL_NAME=$pred_model_name STORE_PATH=$pred_store_path MAX_EPOCH=2 SAVE_EACH_EVALUATION=True > log-${pred_model_name}.txt 2>&1
+#echo "Traning the model "${pred_model_name}
+#CUDA_VISIBLE_DEVICES=0 PYTHONHASHSEED=0 python main.py TASK_NAME=$pred_task_name DATASET_NAME=$pred_task_name DATA_ROOT_PATH=examples/${pred_task_name} SRC_LAN=${pred_src} TRG_LAN=${pred_trg} MODEL_TYPE=$pred_model_type MODEL_NAME=$pred_model_name STORE_PATH=$pred_store_path MAX_EPOCH=2 SAVE_EACH_EVALUATION=True > log-${pred_model_name}.txt 2>&1
+#THEANO_FLAGS=device=$device
 
 # we copy the base config
-est_conf=config-sentQEPostech.py
+est_conf=config-sentQEPOSTECH.py
 est_model_type=EstimatorSent
 est_model_name=${est_task_name}_${est_src}${est_trg}_${est_model_type}
 est_store_path=trained_models/${est_model_name}/
 patience=5
 
 # pre-trained Predictor Weights + Vocab
-pred_vocab=datasets/Dataset_${pred_task_name}_${pred_src}${pred_trg}.pkl
-pred_weights=trained_models/${pred_model_name}/epoch_2_weights.h5
+pred_vocab=datasets/Dataset_wmt18-en-fr-predictor_enfr.pkl #datasets/Dataset_${pred_task_name}_${pred_src}${pred_trg}.pkl
+pred_weights=trained_models/epoch_4_weights.h5 #trained_models/${pred_model_name}/epoch_2_weights.h5
 
 rm -rf config.*
 ln -s ../configs/$est_conf ./config.py
 
 echo "Traning the model "${est_model_name}
-THEANO_FLAGS=device=$device python main.py TASK_NAME=$est_task_name DATASET_NAME=$est_task_name DATA_ROOT_PATH=examples/${est_task_name} SRC_LAN=${est_src} TRG_LAN=${est_trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation PRED_VOCAB=$pred_vocab PRED_WEIGHTS=$pred_weights MODEL_TYPE=$est_model_type MODEL_NAME=$est_model_name STORE_PATH=$est_store_path NEW_EVAL_ON_SETS=val PATIENCE=$patience SAVE_EACH_EVALUATION=True RND_SEED=$rnd_seed > log-${est_model_name}-prep.txt 2>&1
+CUDA_VISIBLE_DEVICES=0 python main.py TASK_NAME=$est_task_name DATASET_NAME=$est_task_name DATA_ROOT_PATH=examples/${est_task_name} SRC_LAN=${est_src} TRG_LAN=${est_trg} PRED_SCORE=$score OUT_ACTIVATION=$out_activation PRED_VOCAB=$pred_vocab PRED_WEIGHTS=$pred_weights MODEL_TYPE=$est_model_type MODEL_NAME=$est_model_name STORE_PATH=$est_store_path NEW_EVAL_ON_SETS=val PATIENCE=$patience SAVE_EACH_EVALUATION=True RND_SEED=$rnd_seed > log-${est_model_name}-prep.txt 2>&1
+#THEANO_FLAGS=device=$device
 
 awk '/^$/ {nlstack=nlstack "\n";next;} {printf "%s",nlstack; nlstack=""; print;}' log-${est_model_name}-prep.txt > log-${est_model_name}.txt
 

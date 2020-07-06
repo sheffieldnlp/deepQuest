@@ -27,6 +27,9 @@ import theano.ifelse
 py_all = all
 py_sum = sum
 
+from numpy.random import seed
+seed(124) # 2, 8, 24, 42, 124
+print("Theano backend Shu")
 
 # INTERNAL UTILS
 theano.config.floatX = floatx()
