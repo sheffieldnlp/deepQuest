@@ -1,0 +1,507 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorial &mdash; DeepQuest  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/hacks.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contact" href="help.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> DeepQuest
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to Quality Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#training-a-qe-model">Training a QE model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scoring">Scoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="help.html">Contact</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DeepQuest</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Tutorial</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/tutorials.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="training-a-qe-model">
+<h2>Training a QE model<a class="headerlink" href="#training-a-qe-model" title="Permalink to this headline">¶</a></h2>
+<p>One can use DeepQuest to train QE models at either word, sentence or document-level.
+In its current version, DeepQuest provides the following, multi-level, QE models:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>POSTECH</strong>: a two-stage end-to-end stacked neural architecture that combines a <em>Predictor</em> and an <em>Estimator</em>, designed by <a class="reference external" href="https://dl.acm.org/citation.cfm?id=3109480">Kim et al., 2017</a>.</p></li>
+<li><p><strong>BiRNN</strong>: simple architecture relying on two bi-directional RNNs, designed by <a class="reference external" href="http://aclweb.org/anthology/C18-1266">Ive et al., 2018</a>.</p></li>
+</ul>
+</div></blockquote>
+<p>Depending on the desired level of prediction, the configuration will differ, and this section aims to give a detailed description of the customised parameters.</p>
+<p>The first step is to create a configuration file (see <a class="reference external" href="https://github.com/sheffieldnlp/deepQuest/blob/master/configs/example_config-WordQE.py">configs/example_config-WordQE.py</a> for an example), which defines the parameters of the model to train, starting with the definition of the task:</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">TASK_NAME</span></code>: name given to the task;</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">SRC_LAN</span></code>, <code class="docutils literal notranslate"><span class="pre">TRG_LAN</span></code>: extensions of correspnding source language and MT files (target language file for Predictor);</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">DATA_ROOT_PATH</span></code>: directory where to find the data;</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">TEXT_FILES</span></code>: a (Python) dictionary that contains the names of the training, development and test sets (<em>without extension</em>).</div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="0">
+<li><p><code class="docutils literal notranslate"><span class="pre">INPUTS_IDS_DATASETS</span></code> – defines the datasets used to train the QE model</p></li>
+</ol>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">source_text</span></code> – source text</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">state_below</span></code> – target text (reference for Predictor, MT for Estimator) one position right-shifted target text (for left POSTECH context, the same as previous word with NMT-Keras Teacher)</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">state_above</span></code> – target text (reference for Predictor, MT for Estimator) one position left-shifted target text (for right POSTECH context, the same as next word with NMT-Keras Teacher)</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">target</span></code> – MT text unshifted to obtain Predictor scores for it</div>
+<div class="line"><br /></div>
+<div class="line"><strong>Note</strong>: only <code class="docutils literal notranslate"><span class="pre">source_text</span></code> and <code class="docutils literal notranslate"><span class="pre">target_text</span></code> inputs are used for biRNN models.</div>
+</div>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>For outputs of single-task models set an output in <code class="docutils literal notranslate"><span class="pre">OUTPUTS_IDS_DATASET</span></code> from the following (+ set <code class="docutils literal notranslate"><span class="pre">MULTI_TASK=False</span></code>, keep pre-set task names):</p></li>
+</ol>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">target_text</span></code> – for Predictor, Predictor training can be stopped after 2-3 epochs as soon as the quality in BLEU will stop improving</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">word_qe</span></code> – for word-level quality Estimator</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">phrase_qe</span></code> – for phrase-level quality Estimator</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">sent_qe</span></code> – for sentence-level quality Estimator</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">doc_qe</span></code> – for doc-level models</div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">LOSS</span></code> – defines the loss function</p></li>
+</ol>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">categorical_crossentropy</span></code> for Predictor (POSTECH architecture)</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">mse</span></code> for QE models</div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p><code class="docutils literal notranslate"><span class="pre">MODEL_TYPE</span></code> – defines the type of the model to train</p></li>
+</ol>
+<blockquote>
+<div><div class="line-block">
+<div class="line">POSTECH: Predictor, Estimator{Word, Phrase, Sent, Doc, DocAtt}</div>
+<div class="line">BiRNN: Enc{Word, PhraseAtt, Sent, Doc, DocAtt}</div>
+<div class="line"><br /></div>
+<div class="line"><strong>Note</strong>: document-level models take the last BiRNN states to produce the QE labels, while the document-level models with an Attention mechanism (DocAtt) take the sum of the BiRNN states, weighted by attention (see <em>model_zoo.py</em> for implementation details). EncPhraseAtt takes into account attended parts of source while estimating MT phrase quality (useful in the absence of phrase alignments).</div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p>Parameters per model type:</p></li>
+</ol>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">WORD_QE_CLASSES</span></code>, <code class="docutils literal notranslate"><span class="pre">PHRASE_QE_CLASSES</span></code> – constantly set to 5, except for OK and BAD labels , since we have a set of standard labels related to padding and other pre-processing</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">SAMPLE_WEIGHTS</span></code> – to specify a dictionary using task names above, labels and their weights (for non-regression tasks, like word-level QE)</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">PRED_SCORE</span></code> – set as the extension of the tag file, (<em>e.g. ``PRED_SCORE`` = ‘bleu’</em>), for both sentence and document-level QE, while for word-level QE, sets as ‘tags’ extension</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">SECOND_DIM_SIZE</span></code> – <em>(for phrase- and document-level QE only)</em> to fix the size of a document (<em>e.g.</em> to the maximum length of the most frequent quartile)</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">OUT_ACTIVATION</span></code> – set as ‘relu’ function if predicted scores are in (0, +infinity), as a ‘sigmoid’ function for scores in (0,1) (for example, BLEU or HTER), or as a linear’ function for scores in (-infinity, +infinity).</div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="5">
+<li><p><code class="docutils literal notranslate"><span class="pre">MULTI_TASK</span></code> – Multi-Tasks Learning (MTL) (POSTECH model only)</p></li>
+</ol>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">MULTI_TASK</span></code> = True / False, to activate / deactivate MTL</div>
+</div>
+<div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">OUTPUTS_IDS_DATASET_FULL</span></code> – defines order for multiple outputs for Multi-Tasks Learning (MTL)</div>
+<div class="line">Standard order of tasks: <code class="docutils literal notranslate"><span class="pre">target_text</span></code>, <code class="docutils literal notranslate"><span class="pre">word_qe</span></code>, <code class="docutils literal notranslate"><span class="pre">sent_qe</span></code> (<code class="docutils literal notranslate"><span class="pre">LOSS</span></code> and <code class="docutils literal notranslate"><span class="pre">MODEL_TYPE</span></code> will be ignored).</div>
+<div class="line">The MTL will first pre-train the word-level weigths (keeping Predictor weights unchanged), and the <em>Estimator</em> (sentence-level).</div>
+</div>
+<div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">EPOCH_PER_UPDATE</span></code> = 1 – times every task is consequently repeated (each of N epochs as specified by the parameters below)</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">EPOCH_PER_PRED</span></code> = 5 – Predictor epochs</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">EPOCH_PER_EST_SENT</span></code> = 5 – EstimatorSent epochs</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">EPOCH_PER_EST_WORD</span></code> = 5 – EstimatorWord epochs</div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="6">
+<li><p>Neural network parameters (should be kept the same for the large Predictor training and then MTL learning).</p></li>
+</ol>
+<blockquote>
+<div><div class="line-block">
+<div class="line">For a small <strong>POSTECH-inspired</strong> model the following parameters should be used:</div>
+</div>
+<div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">IN{OUT}PUT_VOCABULARY_SIZE</span></code> = 30000</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">SOURCE{TARGET}_TEXT_EMBEDDING_SIZE</span></code> = 300</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">EN{DE}CODER_HIDDEN_SIZE</span></code> = 500</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">QE_VECTOR_SIZE</span></code> = 75</div>
+</div>
+<div class="line-block">
+<div class="line">For a large <strong>POSTECH-inspired</strong> model:</div>
+</div>
+<div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">IN{OUT}PUT_VOCABULARY_SIZE</span></code> = 70000</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">SOURCE{TARGET}_TEXT_EMBEDDING_SIZE</span></code> = 500</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">EN{DE}CODER_HIDDEN_SIZE</span></code> = 700</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">QE_VECTOR_SIZE</span></code> = 100</div>
+</div>
+<div class="line-block">
+<div class="line">For document-level QE : <code class="docutils literal notranslate"><span class="pre">DOC_DECODER_HIDDEN_SIZE</span></code> = 50</div>
+</div>
+<div class="line-block">
+<div class="line">For BiRNN models: <code class="docutils literal notranslate"><span class="pre">ENCODER_HIDDEN_SIZE</span></code> = 50</div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="7">
+<li><p>Other training-related parameters:</p></li>
+</ol>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">PRED_VOCAB</span></code> – set the dictionary pickle dumped by the pre-trained model (dumped to the datasets folder)</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">PRED_WEIGHTS</span></code> – set the pre-trained weights (as dumped to the trained_models/{model_name} folder)</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">BATCH_SIZE</span></code> – typically 50 or 70 for smaller models; set to 5 for doc QE</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">MAX_EPOCH</span></code> – max epochs the code will run (for MTL max quantity of iterations over all the three tasks)</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">MAX_IN(OUT)PUT_TEXT_LEN</span></code> – longer sequences are cut to the specified length</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">MAX_SRC(TRG)_INPUT_TEXT_LEN</span></code> – longer sequences are cut to the specified length; set this length separately if different for source and MT inputs (for example, for phrase-level QE, when source sentences and MT phrases are given as inputs)</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">RELOAD</span></code> = {epoch_number}, combined with <code class="docutils literal notranslate"><span class="pre">RELOAD_EPOCH</span></code> = True – helpful when you want to continue training from a certain epoch, also a good idea to specify the vocabulary as previously pickeled (<code class="docutils literal notranslate"><span class="pre">PRED_VOCAB</span></code>)</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">OPTIMIZER</span></code> = {optimizer}, also adjust the learning rate accordingly <code class="docutils literal notranslate"><span class="pre">LR</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">EARLY_STOP</span></code> = True  – activate early stopping with required <code class="docutils literal notranslate"><span class="pre">PATIENCE</span></code> = e.g. 5; set the right stop metric e.g. <code class="docutils literal notranslate"><span class="pre">STOP_METRIC</span></code> = e.g. ‘pearson’ (for regression QE tasks: alo ‘mae’, ‘rmse’; for classification tasks: ‘precision’, ‘recall’, ‘f1’)</div>
+</div>
+</div></blockquote>
+<p>Once all the training parameters are defined in the configuration file quest/config.py, one can run the training of the QE model as follows:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">KERAS_BACKEND</span><span class="o">=</span>theano
+<span class="nb">export</span> <span class="nv">MKL_THREADING_LAYER</span><span class="o">=</span>GNU
+<span class="nv">THEANO_FLAGS</span><span class="o">=</span><span class="nv">device</span><span class="o">={</span>device_name<span class="o">}</span> python main.py <span class="p">|</span> tee -a /tmp/deepQuest.log <span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="p">&amp;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>One can observe the progression of the training in the log file created in the temporary directory.</p>
+</div>
+<div class="section" id="scoring">
+<h2>Scoring<a class="headerlink" href="#scoring" title="Permalink to this headline">¶</a></h2>
+<p>Test sets are scored after each epoch using the standard tests from the <a class="reference external" href="http://www.statmt.org/wmt18/quality-estimation-task.html">WMT QE Shared task</a> metrics, with an inbuilt procedure.
+New test sets with already trained models can be scored by launching the same command as for training. Change the following parameters in your initial config (see <a class="reference external" href="https://github.com/sheffieldnlp/deepQuest/blob/master/configs/config-sentQEbRNNEval.py">configs/config-sentQEbRNNEval.py</a> for an example, for now the scoring procedure is tested only for the sentence-level QE models):</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">EVAL_ON_SETS</span></code> – specify the set for scoring</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">PRED_VOCAB</span></code> – set the path to the vocabulary of the pre-trained model (as dumped to the datasets/Dataset_{task_name}_{src_extension}{trg_extension}.pkl folder)</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">PRED_WEIGHTS</span></code> – set the path to the pre-trained weights (as dumped to the trained_models/{model_name} folder) of the model that would be used for scoring</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">MODE</span></code> – set to ‘sampling’</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">NO_REF</span></code> – set to ‘True’ if you do not have a file with gold-standard labels</div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>We also provide two scripts to train and test Sentence QE models for biRNN and POSTECH (<a class="reference external" href="https://github.com/sheffieldnlp/deepQuest/blob/master/configs/train-test-sentQEbRNN.sh">configs/train-test-sentQEbRNN.sh</a> and <a class="reference external" href="https://github.com/sheffieldnlp/deepQuest/blob/master/configs/train-test-sentQEPostech.sh">configs/train-test-sentQEPostech.sh</a> respectively). Assuming that correct environment is already activated and all the environmental variables are set:</p>
+<ol class="arabic simple">
+<li><p>Sentence QE data in the format compatible for deepQuest could be downloaded, for example, from the <a class="reference external" href="http://www.statmt.org/wmt17/quality-estimation-task.html">WMT QE Shared task 2017</a> page. Download the <a class="reference external" href="https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-1974">task1_en-de_training-dev.tar.gz</a>, <a class="reference external" href="https://lindat.mff.cuni.cz/repository/xmlui/handle/11372/LRT-2135">task1_en-de_test.tar.gz</a> and <a class="reference external" href="http://www.quest.dcs.shef.ac.uk/wmt17_files_qe/wmt17_en-de_gold.tar.gz">wmt17_en-de_gold.tar.gz</a> archives. Make sure to get original version of the data and not the latest version they were replaced with. Create the folder examples/qe-2017 in the quest directory and unarchive all the three archives into the folder. Execute the following commands to rename the 2017 test data:</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> examples/qe-2017
+rename <span class="s1">&#39;s/^test.2017/test/&#39;</span> *
+mv en-de_task1_test.2017.hter test.hter
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Copy the necessary BiRNN shell script to the ‘quest’ folder. Launch the script from the ‘quest’ folder. Specify the name of the folder, extensions of the source and machine-translated files, as well the cuda device (specify ‘cpu’ to train on cpus):</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> deepQuest/quest
+cp ../configs/train-test-sentQEbRNN.sh .
+./train-test-sentQEbRNN.sh --task qe-2017 --source src --target mt --score hter --activation sigmoid --device cuda0 &gt; log-sentQEbRNN-qe-2017.txt <span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="p">&amp;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The complete log is in quest/log-qe-2016_srcmt_EncSent.txt.
+The log log-sentQEbRNN-qe-2017.txt should show results comparable to the ones below:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat log-sentQEbRNN-qe-2017.txt
+
+Analysing input parameters
+Traning the model qe-2017_srcmt_EncSent
+Best model weights are dumped into saved_models/qe-2017_srcmt_EncSent/epoch_12_weights.h5
+Scoring test.mt
+Model output in trained_models/qe-2017_srcmt_EncSent/test_epoch_12_output_0.pred
+Evaluations results
+<span class="o">[</span><span class="m">24</span>/07/2018 <span class="m">12</span>:08:33<span class="o">]</span> **SentQE**
+<span class="o">[</span><span class="m">24</span>/07/2018 <span class="m">12</span>:08:33<span class="o">]</span> Pearson <span class="m">0</span>.3871
+<span class="o">[</span><span class="m">24</span>/07/2018 <span class="m">12</span>:08:33<span class="o">]</span> MAE <span class="m">0</span>.1380
+<span class="o">[</span><span class="m">24</span>/07/2018 <span class="m">12</span>:08:33<span class="o">]</span> RMSE <span class="m">0</span>.1819
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>Note</strong> If you try to launch the scripts with your data and you do not have gold-standard labels for your test data cf. the respective note in the <a class="reference internal" href="#scoring">Scoring</a> section.</p>
+<p>For POSTECH Predictor pre-training, parallel data containing human reference translations should be prepared. For example, the <a class="reference external" href="http://opus.nlpl.eu/Europarl.php">Europarl</a> corpus can be used. The data can be pre-proccesed in a standard <a class="reference external" href="http://www.statmt.org/moses/?n=Moses.Baseline">Moses</a> pipeline (Corpus Preparation section). Typically, around 2M of parallel lines are used for training and 3K lines for testing (small Predictor model).</p>
+<p>We provide an example of the Postech architecture training using Europarl and WMT 2017 Sentence QE data:</p>
+<ol class="arabic simple">
+<li><p>Create a data directory and download the EN-DE Europarl data:</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir -p europarl/raw <span class="o">&amp;&amp;</span> <span class="nb">cd</span> <span class="s2">&quot;</span><span class="nv">$_</span><span class="s2">&quot;</span>
+wget http://opus.nlpl.eu/download.php?f<span class="o">=</span>Europarl/de-en.txt.zip
+unzip download.php<span class="se">\?</span><span class="nv">f</span><span class="o">=</span>Europarl%2Fde-en.txt.zip
+</pre></div>
+</div>
+</div></blockquote>
+<p>Create your copy of the Moses toolkit:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/moses-smt/mosesdecoder.git
+</pre></div>
+</div>
+</div></blockquote>
+<p>Copy the preprocessing scripts provided with the deepQuest tool to your main data directory and launch the preprocessing scripts by specifying the data info and the Moses clone location. This step may take a while.</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> /<span class="o">{</span>your_path<span class="o">}</span>/europarl
+cp deepQuest/configs/preprocess-data-predictor.sh ./
+cp deepQuest/configs/split.py ./
+./preprocess-data-predictor.sh --name Europarl.de-en --source en --target de --dir /<span class="o">{</span>your_path<span class="o">}</span>/europarl --mosesdir /<span class="o">{</span>your_path<span class="o">}</span>/mosesdecoder
+</pre></div>
+</div>
+</div></blockquote>
+<p>The final preprocessed data should look as follows:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wc -l /<span class="o">{</span>your_path<span class="o">}</span>/europarl/clean/en-de/*
+
+<span class="m">3000</span> clean/en-de/dev.de
+<span class="m">3000</span> clean/en-de/dev.en
+<span class="m">3000</span> clean/en-de/test.de
+<span class="m">3000</span> clean/en-de/test.en
+<span class="m">1862790</span> clean/en-de/train.de
+<span class="m">1862790</span> clean/en-de/train.en
+<span class="m">3737580</span> total
+</pre></div>
+</div>
+</div></blockquote>
+<p>Copy the prepared data files into the quest data directory:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir /<span class="o">{</span>your_path<span class="o">}</span>/quest/examples/europarl-en-de
+cp /<span class="o">{</span>your_path<span class="o">}</span>/europarl/clean/en-de/* /<span class="o">{</span>your_path<span class="o">}</span>/quest/examples/europarl-en-de
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Launch the Postech script:</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> deepQuest/quest
+cp ../configs/train-test-sentQEPostech.sh .
+./train-test-sentQEPostech.sh --pred-task europarl-en-de --pred-source en --pred-target de --est-task qe-2017 --est-source src --est-target mt --score hter --activation sigmoid --device cuda0 &gt; log-sentQEPostech-qe-2017.txt <span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="p">&amp;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The complete logs are in quest/log-europarl-en-de_ende_Predictor.txt and quest/log-qe-2017_srcmt_EstimatorSent.txt
+The log log-sentQEPostech-qe-2017.txt should show results comparable to the following ones:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat log-sentQEPostech-qe-2017.txt
+
+Analysing input parameters
+Traning the model europarl-en-de_ende_Predictor
+Traning the model qe-2017_srcmt_EstimatorSent
+Best model weights are dumped into saved_models/qe-2017_srcmt_EstimatorSent/epoch_3_weights.h5
+Scoring test.mt
+Model output in trained_models/qe-2017_srcmt_EstimatorSent/test_epoch_3_output_0.pred
+Evaluations results
+<span class="o">[</span><span class="m">30</span>/07/2018 <span class="m">14</span>:24:51<span class="o">]</span> Pearson <span class="m">0</span>.5276
+<span class="o">[</span><span class="m">30</span>/07/2018 <span class="m">14</span>:24:51<span class="o">]</span> MAE <span class="m">0</span>.1279
+<span class="o">[</span><span class="m">30</span>/07/2018 <span class="m">14</span>:24:51<span class="o">]</span> RMSE <span class="m">0</span>.1649
+<span class="o">[</span><span class="m">30</span>/07/2018 <span class="m">14</span>:24:51<span class="o">]</span> Done evaluating on metric qe_metrics
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="help.html" class="btn btn-neutral float-right" title="Contact" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018, Julia Ive, Fred Blain, Lucia Specia
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

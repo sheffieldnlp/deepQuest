@@ -1,0 +1,5 @@
+.. Color profiles for Sphinx.
+.. Has to be used with hacks.css (_static/hacks.css)
+
+.. role:: point
+.. role:: red

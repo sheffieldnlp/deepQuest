@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction to Quality Estimation &mdash; DeepQuest  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/hacks.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="DeepQuest – Framework for neural-based Quality Estimation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> DeepQuest
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction to Quality Estimation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#traditional-quality-estimation">Traditional Quality Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#neural-based-quality-estimation">Neural-based Quality Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#neural-based-document-level-quality-estimation">Neural-based Document-Level Quality Estimation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="help.html">Contact</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DeepQuest</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Introduction to Quality Estimation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/introduction.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction-to-quality-estimation">
+<h1>Introduction to Quality Estimation<a class="headerlink" href="#introduction-to-quality-estimation" title="Permalink to this headline">¶</a></h1>
+<p>Quality Estimation (QE) (<a class="reference external" href="http://clg.wlv.ac.uk/papers/Specia_EAMT2009.pdf">Specia et al. 2009</a>) targets the prediction of MT quality without any human intervention.
+QE results can be particularly useful during the costly Post-Edition (PE) process, the process of manually correcting MT output to achieve a publishable quality.
+QE indicates if an MT unit (<em>i.e.</em> a word, a phrase, a sentence, a paragraph or a document) is <em>worth post-editing</em>.
+For instance, sentence-level QE scores help to rank sentences that are worth post-editing, while word-level QE aims to spot words that need to be review during PE.
+Document-level QE, on the other hand, scores or ranks documents according to their quality for fully automated MT usage scenarios, where no post-editing can be performed, <em>e.g.</em> MT for gisting of online News articles.</p>
+<p>The QE task is usually cast as a supervised regression or classification task, with a rather small amount of manually annotated or/and post-edited data.
+This data can be labelled using automatic metrics towards post-edited references.
+Whereas at the document, paragraph or sentence levels, QE predicts automatic scores (e.g., BLEU, TER, BEER, etc.), at the word and phrase levels predictions are often binary: <em>OK</em> or <em>BAD</em>.</p>
+<div class="section" id="traditional-quality-estimation">
+<h2>Traditional Quality Estimation<a class="headerlink" href="#traditional-quality-estimation" title="Permalink to this headline">¶</a></h2>
+<p>For the document, paragraph and sentence levels, QE models are usually trained using various regression algorithms (e.g. Support Vector Machines (SVMs), Multilayer Perceptron).
+For the word and phrase levels, algorithms such as Conditional Random Fields (CRFs) or Random Forests are the most commonly used.</p>
+<p>QE features are traditionally characterized as <em>black-box</em> (system-independent) or <em>glass-box</em> (system-dependent, extracted from the translation process).
+At word-level for instance, one can distinguish the part-of-speech and the lemma of a given word as system-independent features, and the system posterior probability of producing a certain word in a certain position as a glass-box feature.</p>
+</div>
+<div class="section" id="neural-based-quality-estimation">
+<h2>Neural-based Quality Estimation<a class="headerlink" href="#neural-based-quality-estimation" title="Permalink to this headline">¶</a></h2>
+<p>Recently, neural-based methods have been successfully exploited to improve QE performances.
+Those methods mostly rely on an encoder-decoder architecture (<a class="reference external" href="https://arxiv.org/abs/1409.3215">Sutskever et al. 2014</a>, <a class="reference external" href="https://arxiv.org/abs/1409.0473">Bahdanau et al. 2015</a>) for sequence-to-sequence prediction problems.
+This approach has become very popular in many applications, where inputs and outputs are sequential, as natural language data.</p>
+<p>In an encoder-decoder approach, an input sequence is encoded into an internal representation (roughly, features learned automatically), and then an output sequence is generated from this representation.
+Current best practices implement encoder-decoder approaches using Recurrent Neural Networks (RNNs), which handle inputs in a sequence, while taking previous computation steps into account.</p>
+<p>DeepQuest provides two different architectures, both based on the RNN encoder-decoder implementation:</p>
+<blockquote>
+<div><p><strong>POSTECH architecture</strong> (<a class="reference external" href="https://dl.acm.org/citation.cfm?id=3109480">Kim et al., 2017</a>)</p>
+<p>This architecture is a two-stage end-to-end stacked neural QE model that combines a <em>Predictor</em> and an <em>Estimator</em> (<a class="reference external" href="https://dl.acm.org/citation.cfm?id=3109480">Kim et al., 2017</a>):</p>
+<ul class="simple">
+<li><p><em>Predictor</em> is an encoder-decoder RNN model to predict words based on their important context representations.
+To be more precise, it uses a modification of the standard NMT encoder-decoder architecture, which at each timestep predicts the next word <span class="math notranslate nohighlight">\(e_i\)</span> taking into account not only the previously generated word <span class="math notranslate nohighlight">\(e_{i-1}\)</span>, but also the following word <span class="math notranslate nohighlight">\(e_{i+1}\)</span> (MT is given for the QE task).
+This Predictor architecture is pre-trained separately using a significant amount of parallel data;</p></li>
+<li><p><em>Estimator</em> is which is a bidirectional RNN model to produce quality estimates for words, phrases and sentences based on representations from the Predictor, the so-called <em>QE feature vectors</em> (QEFVs).
+These QEFVs are extracted by decomposing the Predictor softmax layer and contain weights assigned by the Predictor to the words of actual MT we seek to evaluate.</p></li>
+</ul>
+<p>Similarly to original work by (<a class="reference external" href="https://dl.acm.org/citation.cfm?id=3109480">Kim et al., 2017</a>), DeepQuest also allows a stacked architecture for Multi-Task Learning (MTL), which consists in alternating between word-level predictions, and word, sentence, and phrase-level QE objectives, with one objective at a time.</p>
+<p><strong>BiRNN architecture</strong> (<a class="reference external" href="https://www.aclweb.org/anthology/C18-1266/">Ive et al., 2018</a>)</p>
+<p>The BiRNN architecture uses only two bi-directional RNNs (bi-RNN) with Gated Recurrent Units (GRUs) as encoders, to learn the representation of the &lt;source, translation&gt; sentence pair.
+In DeepQuest, the representations of the source and of the automatic translation are learned independently, and concatenated afterwards, as illustrated below:</p>
+<a class="reference internal image-reference" href="_images/sent.jpg"><img alt="_images/sent.jpg" class="align-center" src="_images/sent.jpg" style="height: 350px;" /></a>
+<p>For word-level QE, the computed representation of a word can be used as is to make classification decisions.
+However, sentence-level QE scores are not simple aggregations of word-level representations: they reflect some importance of words within a sentence. Thus, a certain weighting should be applied to those representations. Such weighting is provided by the attention mechanism.
+We apply the following attention function computing a normalized weight for each hidden state <span class="math notranslate nohighlight">\(h_{j}\)</span> of the RNN:</p>
+<div class="math notranslate nohighlight" id="equation">
+\[\alpha_j = \frac{\exp(W_ah_j^\top)}{\sum_{k=1}^{J}\exp(W_ah_k^\top)}\]</div>
+<p>The resulting sentence vector is thus a weighted sum of word vectors:</p>
+<div class="math notranslate nohighlight">
+\[v = \sum_{j=1}^{J}\alpha_j h_{j}\]</div>
+<p>This vector is then used to produce quality estimates.</p>
+</div></blockquote>
+</div>
+<div class="section" id="neural-based-document-level-quality-estimation">
+<h2>Neural-based Document-Level Quality Estimation<a class="headerlink" href="#neural-based-document-level-quality-estimation" title="Permalink to this headline">¶</a></h2>
+<p>DeepQuest is also suitable for neural-based document-level QE, for which a document representation is computed with RNNs (<a class="reference external" href="http://aclweb.org/anthology/D15-1106">Lin et al., 2015</a>).
+Here is an illustration of the document-level architecture implemented in DeepQuest:</p>
+<a class="reference internal image-reference" href="_images/doc.jpg"><img alt="_images/doc.jpg" class="align-center" src="_images/doc.jpg" style="height: 350px;" /></a>
+<p>This architecture is similar to the BiRNN architecture.
+The document-level quality predictor takes as its input a set of sentence-level representations.
+The last hidden state of the decoder can be taken as the summary of an entire sequence.
+However, some document-level QE scores are not a simple aggregations of sentence-level QE scores.
+In such cases, DeepQuest provides an architecture using the attention mechanism (see <a class="reference internal" href="#equation">equation</a>) to learn to weight different representations at sentence-level.
+Finally, the last hidden state (or weighted sum) of the sentence-level representations is directly used to make classification decisions.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="DeepQuest – Framework for neural-based Quality Estimation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018, Julia Ive, Fred Blain, Lucia Specia
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
