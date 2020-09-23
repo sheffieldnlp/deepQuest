@@ -100,5 +100,5 @@ Finally, the last hidden state (or weighted sum) of the sentence-level represent
 .. _Sutskever et al. 2014: https://arxiv.org/abs/1409.3215
 .. _Bahdanau et al. 2015: https://arxiv.org/abs/1409.0473
 .. _Kim et al., 2017: https://dl.acm.org/citation.cfm?id=3109480
-.. _Ive et al., 2018: 
+.. _Ive et al., 2018: https://www.aclweb.org/anthology/C18-1266/ 
 .. _Lin et al., 2015: http://aclweb.org/anthology/D15-1106
