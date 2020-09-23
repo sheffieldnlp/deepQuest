@@ -1,7 +1,7 @@
 language: python - "3.6"
 
 install:
-  - pip install --user sphinx sphinx-rtd-theme travis-sphinx
+  - pip install sphinx sphinx-rtd-theme travis-sphinx
 
 script:
   travis-sphinx build
